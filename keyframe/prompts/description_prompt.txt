@@ -1,0 +1,4 @@
+Given the following image from a lecture video. In detail, give all the notes shown if there are any and describe
+any images or diagrams shown.
+
+You must only give the description and details, do not add any extra comments or opinions.
