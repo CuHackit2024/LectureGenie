@@ -5,6 +5,13 @@ st.set_page_config(
     page_icon="🧊",
 )
 
+if "processed" not in st.session_state:
+    st.session_state["processed"] = None
+if "processed_video" not in st.session_state:
+    st.session_state["processed_video"] = None
+if "video" not in st.session_state:
+    st.session_state["video"] = None
+
 st.write("# Welcome to [Product]! 👋")
 
 
@@ -24,3 +31,4 @@ st.markdown(
         - **Generate flashcards** for important terms from your media
 """
 )
+
