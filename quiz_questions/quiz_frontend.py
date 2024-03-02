@@ -1,7 +1,6 @@
+from .utils import AVAILABLE_QUESTIONS
 import streamlit as st
 import hashlib
-
-AVAILABLE_QUESTIONS = ["Multiple Choice", "True/False"]
 
 
 class QuizQuestion:
@@ -56,29 +55,6 @@ class QuizQuestion:
         return f"Question: {self.question}\nAnswer: {self.answer}\nOptions: {self.options}"
 
 
-class QuizQuestionMaker:
-
-    def __init__(self, start_timestamp, end_timestamp, processed_video, question_type):
-        """
-        Generates a quiz question based on info from the video.
-        :param start_timestamp: The start time of the info the question is based on
-        :param end_timestamp: The end time of the info the question is based on
-        :param processed_video: The processed video object
-        """
-        self.start_timestamp = start_timestamp
-        self.end_timestamp = end_timestamp
-        self.processed_video = processed_video
-        if question_type not in AVAILABLE_QUESTIONS:
-            raise ValueError(f"Question type must be one of {AVAILABLE_QUESTIONS}")
-        self.question_type = question_type
-
-    def ask_gemini(self):
-        """
-        Ask a question based on the Gemini video.
-        """
-        raise NotImplementedError("This method has not been implemented yet.")
-
-
 # Testing
 if __name__ == "__main__":
     # Setting up a Streamlit app
@@ -87,7 +63,7 @@ if __name__ == "__main__":
 
     # Creating a mc quiz question
     question_mc = QuizQuestion("What is the capital of France?", "Paris",
-                            ["Paris", "London", "Berlin", "Madrid"], "Multiple Choice")
+                               ["Paris", "London", "Berlin", "Madrid"], "Multiple Choice")
     question_mc.handle()
 
     # Creating a tf quiz question
