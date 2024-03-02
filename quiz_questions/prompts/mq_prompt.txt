@@ -11,4 +11,5 @@ B) [Option 2]
 C) [Option 3]
 D) [Option 4]
 Correct Answer: [Letter of correct answer]
+Explanation: [Full sentence explanation of why correct answer is correct]
 <end>
