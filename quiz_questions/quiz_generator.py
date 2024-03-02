@@ -50,15 +50,19 @@ class QuizQuestionMaker:
 
         question = None
         answer = None
+        explanation = None
 
         for line in lines:
             if line.startswith("Question:"):
-                question = line[10:].strip()
+                question = line[9:].strip()
                 continue
 
             elif line.startswith("Correct Answer:"):
-                answer = line[8:].strip()
+                answer = line[15:].strip()
                 continue
+
+            elif line.startswith("Explanation:"):
+                explanation = line[12:].strip()
 
             for letter in letters:
                 if line.startswith(f"{letter}) "):
@@ -68,7 +72,7 @@ class QuizQuestionMaker:
         assert answer is not None
         assert len(options) == 4
 
-        return question, answer, options
+        return question, answer, options, explanation
 
     @staticmethod
     def parse_tf(response_text: str) -> tuple:
@@ -86,19 +90,24 @@ class QuizQuestionMaker:
 
         question = None
         answer = None
+        explanation = None
 
         for line in lines:
             if line.startswith("Question:"):
-                question = line[10:].strip()
+                question = line[9:].strip()
                 continue
 
             elif line.startswith("IsTrue:"):
                 answer = line[7:].strip()
 
+            elif line.startswith("Explanation:"):
+                explanation = line[12:].strip()
+
         assert question is not None
         assert answer is not None
+        assert explanation is not None
 
-        return question, answer
+        return question, answer, explanation
 
     def ask_gemini(self):
         """
@@ -116,14 +125,14 @@ class QuizQuestionMaker:
         response = self.model.generate_content([prompt])
         response_text = response.text
         if self.question_type == "Multiple Choice":
-            question, answer, options = self.parse_mcq(response_text)
+            question, answer, options, explanation = self.parse_mcq(response_text)
         elif self.question_type == "True/False":
-            question, answer = self.parse_tf(response_text)
+            question, answer, explanation = self.parse_tf(response_text)
             options = ["True", "False"]
         else:
             raise ValueError(f"Question type must be one of {AVAILABLE_QUESTIONS}")
 
-        print(f"Question: {question}\nAnswer: {answer}\nOptions: {options}")
+        print(f"Question: {question}\nAnswer: {answer}\nOptions: {options}\nExplanation: {explanation}")
 
 
 # Testing

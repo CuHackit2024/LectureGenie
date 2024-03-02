@@ -2,9 +2,10 @@ Given the following information from sections of a video, generate a true or fal
 
 $INFO
 
-You must provide the multiple choice question exactly as shown in the following format:
+You must provide the true/false question exactly as shown in the following format:
 
 <start>
 Question: [Question here]
 IsTrue: [True or False]
+Explanation: [Full sentence explanation of why correct answer is correct]
 <end>
