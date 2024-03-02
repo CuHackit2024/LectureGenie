@@ -1,0 +1,14 @@
+Given the following information from sections of a video, generate a multiple choice question to help the viewer remember the important information.
+
+$INFO
+
+You must provide the multiple choice question exactly as shown in the following format:
+
+<start>
+Question: [Question here]
+A) [Option 1]
+B) [Option 2]
+C) [Option 3]
+D) [Option 4]
+Correct Answer: [Letter of correct answer]
+<end>
