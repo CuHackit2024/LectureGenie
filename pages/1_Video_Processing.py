@@ -2,8 +2,12 @@ import streamlit as st
 #import the backend code for the video processing
 import os
 
-st.session_state["processed"] = None
-st.session_state["video"] = None
+if "processed" not in st.session_state:
+    st.session_state["processed"] = None
+if "processed_video" not in st.session_state:
+    st.session_state["processed_video"] = None
+if "video" not in st.session_state:
+    st.session_state["video"] = None
 
 st.set_page_config(
     page_title="Video Processing",
