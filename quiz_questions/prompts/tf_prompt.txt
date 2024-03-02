@@ -1,0 +1,10 @@
+Given the following information from sections of a video, generate a true or false question to help the viewer remember the important information.
+
+$INFO
+
+You must provide the multiple choice question exactly as shown in the following format:
+
+<start>
+Question: [Question here]
+IsTrue: [True or False]
+<end>
