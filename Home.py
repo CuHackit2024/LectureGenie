@@ -2,12 +2,13 @@ import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
 import base64
 from st_clickable_images import clickable_images
+from PIL import Image
 
 st.set_page_config(
     page_title="Name",
-    page_icon="🧊",
     layout="centered",
     initial_sidebar_state="collapsed",
+    page_icon=Image.open("icon_icon.png"),
 )
 
 import add_title
