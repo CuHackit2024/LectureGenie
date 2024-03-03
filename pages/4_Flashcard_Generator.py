@@ -4,6 +4,7 @@ import random
 import google.generativeai as genai
 import toml
 import flashcard_calls
+from PIL import Image
 
 if "flashcards" not in st.session_state:
     st.session_state.flashcards = None
@@ -72,7 +73,7 @@ def flashcards_game(terms_definitions, definitions):
 
 st.set_page_config(
     page_title="Generate Flash Cards",
-    page_icon="🧊",
+page_icon=Image.open("icon_icon.png"),
 )
 
 import add_title

@@ -2,6 +2,7 @@ Given the following information from sections of a video, generate a multiple ch
 
 $INFO
 
+You must provide only the letter when providing the correct answer.
 You must provide the multiple choice question exactly as shown in the following format:
 
 <start>
