@@ -48,7 +48,6 @@ if "start_time" not in st.session_state:
 top_cols = st.columns([.75, .25])
 
 
-video_length_seconds = 46.0
 with top_cols[0]:
     with st.container(border=True):
         st.video(st.session_state.processed_video.path_to_video)
