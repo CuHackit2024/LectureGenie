@@ -4,6 +4,7 @@ import random
 import google.generativeai as genai
 import toml
 import flashcard_calls
+import json
 
 if "flashcards" not in st.session_state:
     st.session_state.flashcards = None
@@ -85,7 +86,8 @@ if "term_definitions" not in st.session_state:
     st.session_state.term_definitions = pd.DataFrame(columns=["Term", "Definition"])
     st.session_state.term_definitions.insert(0, 'Show Definitions', False)
 
-if st.session_state.processed_video is None:
+st.session_state.processed_video = "data/data_science_full.json"
+if st.session_state.processed_video is not None:
     st.markdown("""Simply press the generate button below to generate some flashcards
     from the processed video.""")
 
@@ -93,13 +95,22 @@ if st.session_state.processed_video is None:
     genai.configure(api_key=key)
 
     if st.button("Generate Flashcards"):
-        st.session_state.flashcards = True
-        model = genai.GenerativeModel('gemini-pro')
-        prompt = open("flashcard_calls/prompt.txt", "r").read().strip()
-        prompt = prompt.replace("$INFO", text)
-        response = model.generate_content([prompt])
-        response_text = response.text
-        st.session_state.term_definitions = flashcard_calls.parse(response_text, st.session_state.term_definitions)
+        with st.spinner('Generating flashcards...'):
+            st.session_state.flashcards = True
+            model = genai.GenerativeModel('gemini-pro')
+            prompt = open("flashcard_calls/prompt.txt", "r").read().strip()
+
+            text_lists = flashcard_calls.parse_processed(st.session_state.processed_video)
+
+            for(text) in text_lists:
+                prompt = prompt.replace("$INFO", text)
+                prompt = prompt.replace("$TERMS", st.session_state.term_definitions["Definition"].to_string(index=False))
+                response = model.generate_content([prompt])
+                response_text = response.text
+                st.session_state.term_definitions = flashcard_calls.parse(response_text, st.session_state.term_definitions)
+
+            st.session_state.term_definitions['Term'] = st.session_state.term_definitions['Term'].str.lower()
+            st.session_state.term_definitions = st.session_state.term_definitions.drop_duplicates(subset='Term')
 
     if st.session_state.flashcards:
         st.markdown("""Flashcards have been generated! You can now view the terms and definitions below.
@@ -113,9 +124,12 @@ if st.session_state.processed_video is None:
         st.session_state.term_definitions["Definition"] = ""
 
         with flash_tab:
-            if st.checkbox("Flip Terms and Definitions"):
-                st.session_state.term_definitions = st.session_state.term_definitions.rename(columns={"Term": "Definition", "Definition": "Term"})
+            flip = st.checkbox("Flip Terms and Definitions")
+            if flip:
+                st.session_state.term_definitions = st.session_state.term_definitions.rename(
+                    columns={"Term": "Definition", "Definition": "Term"})
                 st.session_state.term_definitions["Term"] = definitions
+
                 definitions = st.session_state.term_definitions["Definition"]
 
             reveal_definitions = st.checkbox("Reveal Definitions")
