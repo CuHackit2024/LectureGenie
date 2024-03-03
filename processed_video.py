@@ -9,6 +9,7 @@ class ProcessedVideo:
     def create(self, transcript: list[dict], frame_descriptions: list[str]):
         print("Transcript len: ", len(transcript))
         print("frame desciritpn len: ", len(frame_descriptions))
+        
         assert (len(transcript) == len(frame_descriptions))
         self.segments = []
         for i, segment in enumerate(transcript):
