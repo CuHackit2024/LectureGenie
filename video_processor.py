@@ -17,6 +17,8 @@ class VideoTranscriber:
         self.job_name_prefix = job_name_prefix
         self.s3_client = boto3.client('s3', region_name=region)
         self.transcribe_client = boto3.client('transcribe', region_name=region)
+    
+
 
     def upload_video_to_s3(self, file_obj, s3_file_name):
         """Uploads a file-like object to an S3 bucket.
@@ -51,7 +53,6 @@ class VideoTranscriber:
             }
         )
         
-
         print(f"Started transcription job: {job_name}")
         return job_name
 
