@@ -5,27 +5,16 @@ import google.generativeai as genai
 import toml
 import flashcard_calls
 from PIL import Image
+st.set_page_config(
+    page_title="Generate Flash Cards",
+page_icon=Image.open("icon_icon.png"),
+)
+# Checking if the st.session_state.processed_video exists
+if "processed_video" not in st.session_state or st.session_state.processed_video is None:
+    st.error("Please go to video processing, and process a video before generating flashcards. ")
 
 if "flashcards" not in st.session_state:
     st.session_state.flashcards = None
-
-text = """Starfish or sea stars are star-shaped echinoderms belonging to the class Asteroidea (/ˌæstəˈrɔɪdiə/). 
-Common usage frequently finds these names being also applied to ophiuroids, which are correctly referred to as 
-brittle stars or basket stars. Starfish are also known as asteroids due to being in the class Asteroidea. About 1,
-900 species of starfish live on the seabed in all the world's oceans, from warm, tropical zones to frigid, 
-polar regions. They are found from the intertidal zone down to abyssal depths, at 6,000 m (20,000 ft) below the 
-surface. Starfish are marine invertebrates. They typically have a central disc and usually five arms, though some 
-species have a larger number of arms. The aboral or upper surface may be smooth, granular or spiny, and is covered 
-with overlapping plates. Many species are brightly coloured in various shades of red or orange, while others are 
-blue, grey or brown. Starfish have tube feet operated by a hydraulic system and a mouth at the centre of the oral or 
-lower surface. They are opportunistic feeders and are mostly predators on benthic invertebrates. Several species have 
-specialized feeding behaviours including eversion of their stomachs and suspension feeding. They have complex life 
-cycles and can reproduce both sexually and asexually. Most can regenerate damaged parts or lost arms and they can 
-shed arms as a means of defense. The Asteroidea occupy several significant ecological roles. Starfish, such as the 
-ochre sea star (Pisaster ochraceus) and the reef sea star (Stichaster australis), have become widely known as 
-examples of the keystone species concept in ecology. The tropical crown-of-thorns starfish (Acanthaster planci) is a 
-voracious predator of coral throughout the Indo-Pacific region, and the Northern Pacific seastar is on the list of 
-the World's 100 Worst Invasive Alien Species."""
 
 
 def flashcards_game(terms_definitions, definitions):
@@ -71,10 +60,7 @@ def flashcards_game(terms_definitions, definitions):
             st.session_state.guess = ""
 
 
-st.set_page_config(
-    page_title="Generate Flash Cards",
-page_icon=Image.open("icon_icon.png"),
-)
+
 
 import add_title
 
@@ -86,7 +72,6 @@ if "term_definitions" not in st.session_state:
     st.session_state.term_definitions = pd.DataFrame(columns=["Term", "Definition"])
     st.session_state.term_definitions.insert(0, 'Show Definitions', False)
 
-st.session_state.processed_video = "data/data_science_full.json"
 if st.session_state.processed_video is not None:
     st.markdown("""Simply press the generate button below to generate some flashcards
     from the processed video.""")
@@ -100,7 +85,7 @@ if st.session_state.processed_video is not None:
             model = genai.GenerativeModel('gemini-pro')
             prompt = open("flashcard_calls/prompt.txt", "r").read().strip()
 
-            text_lists = flashcard_calls.parse_processed(st.session_state.processed_video)
+            text_lists = flashcard_calls.parse_processed()
 
             for(text) in text_lists:
                 prompt = prompt.replace("$INFO", text)

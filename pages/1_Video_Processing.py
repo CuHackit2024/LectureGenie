@@ -1,4 +1,5 @@
 import streamlit as st
+import os 
 from PIL import Image
 
 # Setup session state variables
@@ -54,19 +55,22 @@ transcriber = VideoTranscriber(region="us-west-2", s3_bucket="transcibe-cuhackit
 st.title("Video Processing")
 st.markdown("#### Upload Lecture Video")
 
-# Reset button
-if st.button("Reset"):
-    st.session_state["processed"] = False
-    st.session_state["transcription_started"] = False
-    st.session_state["transcribed"] = False
-    st.session_state["job_name"] = ""
-    st.session_state["processed_video"] = None
 
-if st.button("activate skip"):
-    st.session_state["processed"] = False
-    st.session_state["transcribed"] = True
-    st.session_state["transcription_response"] = json.load(open("data/data_science_full.json", "r"))
-    st.session_state["transcription_response"] = st.session_state["transcription_response"]["segments"]
+# Checking their are directories inside of data/
+available_folders = []
+if os.path.exists("data"):
+    available_folders = [f for f in os.listdir("data") if os.path.isdir(f"data/{f}")]
+    # Provide a dropdown to select the folder
+    selected_folder = st.selectbox("Select a folder to load a processed video", available_folders)
+    if st.button("Load processed video"):
+        # Load the processed video
+        processed_video = ProcessedVideo()
+        processed_video.load_from_json(f"data/{selected_folder}/processed.json")
+        st.session_state["processed_video"] = processed_video
+        st.session_state["processed_video"].path_to_video = f"data/{selected_folder}/processed.mp4"
+        st.success("Processed video loaded")
+
+
 
 
 uploaded_file = st.file_uploader("Choose a video file", type=["mp4", "mov", "avi", "wmv", "flv", "mkv", "webm"])
@@ -85,33 +89,33 @@ print("uploaded_file", uploaded_file)
 
 # Process and upload video
 if uploaded_file is not None and not st.session_state["transcription_started"] and st.button("Process and Upload Video"):
-    with st.spinner('Uploading video to transcribe...'):
+    
 
-        """
-        Transcribing the video
-        """
-        # Assuming direct upload without any processing
-        s3_file_name = f"processed_videos/{uploaded_file.name}"
-        
-        # Upload the video to S3 directly from the uploaded file
-        transcriber.upload_video_to_s3(uploaded_file, s3_file_name)
-        st.status("Video uploaded to S3")
-        # Start the transcription job
-        job_name = transcriber.start_transcription_job(s3_file_name)
-        st.status("Transcription job started")
-        st.session_state["job_name"] = job_name
-        st.session_state["transcription_started"] = True
+    """
+    Transcribing the video
+    """
+    # Assuming direct upload without any processing
+    s3_file_name = f"processed_videos/{uploaded_file.name}"
+    
+    # Upload the video to S3 directly from the uploaded file
+    transcriber.upload_video_to_s3(uploaded_file, s3_file_name)
+    status.status("Video uploaded to S3")
+    # Start the transcription job
+    job_name = transcriber.start_transcription_job(s3_file_name)
+    status.status("Transcription job started")
+    st.session_state["job_name"] = job_name
+    st.session_state["transcription_started"] = True
 
 if st.session_state["transcription_started"] and not st.session_state["transcribed"]:
-    with st.spinner("Waiting for transcription to complete..."):
-        """
-        Waiting for the transcription to complete
-        """
-        # blocking call to wait for the transcription to complete
-        st.session_state.transcription_response = transcriber.get_transcription_times(st.session_state["job_name"])
-        if st.session_state.transcription_response:
-            st.status("Transcription complete")
-            st.session_state["transcribed"] = True
+    """
+    Waiting for the transcription to complete
+    """
+    # blocking call to wait for the transcription to complete
+    status.status("Waiting for transcription to complete...")
+    st.session_state.transcription_response = transcriber.get_transcription_times(st.session_state["job_name"])
+    if st.session_state.transcription_response:
+        status.status("Transcription complete")
+        st.session_state["transcribed"] = True
 
 if st.session_state["transcribed"] and not st.session_state["processed"]:
 

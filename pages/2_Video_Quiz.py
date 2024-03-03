@@ -35,7 +35,10 @@ st.title("Interactive Video")
 # else:
 #     st.error("Please go to video processing, and process a video before generating quiz questions.")
 
-if st.session_state.video_path is None:
+try:
+    if st.session_state.processed_video.path_to_video is None:
+        st.error("Please upload a video at the Video Processing page.")
+except AttributeError:
     st.error("Please upload a video at the Video Processing page.")
 if "question_element" not in st.session_state:
     st.session_state.question_element = None
@@ -48,7 +51,7 @@ top_cols = st.columns([.75, .25])
 video_length_seconds = 46.0
 with top_cols[0]:
     with st.container(border=True):
-        st.video(st.session_state.video_path)
+        st.video(st.session_state.processed_video.path_to_video)
 
 with top_cols[1]:
     start_time_str = st.text_input("Question Time", "00:00")
