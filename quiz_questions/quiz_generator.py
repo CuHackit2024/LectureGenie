@@ -1,11 +1,13 @@
 from .utils import AVAILABLE_QUESTIONS
 import google.generativeai as genai
 import toml
+from processed_video import ProcessedVideo
+import random
 
 
 class QuizQuestionMaker:
 
-    def __init__(self, start_timestamp: int, end_timestamp: int, processed_video, question_type: str):
+    def __init__(self, start_timestamp: int, end_timestamp: int, processed_video: ProcessedVideo):
         """
         Generates a quiz question based on info from the video.
         :param start_timestamp: The start time of the info the question is based on
@@ -15,11 +17,9 @@ class QuizQuestionMaker:
         self.start_timestamp = start_timestamp
         self.end_timestamp = end_timestamp
         self.processed_video = processed_video
-        if question_type not in AVAILABLE_QUESTIONS:
-            raise ValueError(f"Question type must be one of {AVAILABLE_QUESTIONS}")
-        self.question_type = question_type
 
-        key = toml.load("keys.toml")["gemini"]['key']
+        keys = toml.load("keys.toml")["gemini"]['keys']
+        key = random.choice(keys)
         genai.configure(api_key=key)
         self.model = genai.GenerativeModel('gemini-pro')
 
@@ -29,7 +29,17 @@ class QuizQuestionMaker:
         :return: string to insert into the prompt
         """
 
-        info = open("quiz_questions/exampleInfo.txt", "r").read().strip()
+        # Find the segment with the end time closest to the start time of the question
+        relevant_segment = None
+        for segment in self.processed_video.segments:
+            if float(segment.start) <= self.start_timestamp <= float(segment.end):
+                relevant_segment = segment
+                break
+        if relevant_segment is None:
+            print("No relevant segment found, using first segment")
+            relevant_segment = self.processed_video.segments[0]
+
+        info = relevant_segment.text + " " + relevant_segment.frame_description
         return info
 
     @staticmethod
@@ -59,6 +69,8 @@ class QuizQuestionMaker:
 
             elif line.startswith("Correct Answer:"):
                 answer = line[15:].strip()
+                if answer[-1] == ")":
+                    answer = answer[:-1]
                 continue
 
             elif line.startswith("Explanation:"):
@@ -68,7 +80,8 @@ class QuizQuestionMaker:
                 if line.startswith(f"{letter}) "):
                     options.append(line[3:].strip())
 
-        assert question is not None
+        if question is None:
+            raise ValueError("Question not found in response: " + response_text)
         assert answer is not None
         assert len(options) == 4
 
@@ -109,13 +122,13 @@ class QuizQuestionMaker:
 
         return question, answer, explanation
 
-    def ask_gemini(self):
+    def get_question(self, question_type):
         """
         Ask a question based on the Gemini video.
         """
-        if self.question_type == "Multiple Choice":
+        if question_type == "Multiple Choice":
             prompt = open("quiz_questions/prompts/mq_prompt.txt", "r").read().strip()
-        elif self.question_type == "True/False":
+        elif question_type == "True/False":
             prompt = open("quiz_questions/prompts/tf_prompt.txt", "r").read().strip()
         else:
             raise ValueError(f"Question type must be one of {AVAILABLE_QUESTIONS}")
@@ -124,23 +137,25 @@ class QuizQuestionMaker:
 
         response = self.model.generate_content([prompt])
         response_text = response.text
-        if self.question_type == "Multiple Choice":
+        if question_type == "Multiple Choice":
             question, answer, options, explanation = self.parse_mcq(response_text)
-        elif self.question_type == "True/False":
+        elif question_type == "True/False":
             question, answer, explanation = self.parse_tf(response_text)
             options = ["True", "False"]
         else:
             raise ValueError(f"Question type must be one of {AVAILABLE_QUESTIONS}")
 
-        print(f"Question: {question}\nAnswer: {answer}\nOptions: {options}\nExplanation: {explanation}")
+        # make a dict
+        question_dict = {
+            "question": question,
+            "answer": answer,
+            "options": options,
+            "question_type": question_type
+        }
+        return question_dict
 
 
 # Testing
 if __name__ == "__main__":
-    maker = QuizQuestionMaker(0, 10, "video", "Multiple Choice")
-    maker.ask_gemini()
-
-    # TF
-    maker = QuizQuestionMaker(0, 10, "video", "True/False")
-    maker.ask_gemini()
+    pass
 
