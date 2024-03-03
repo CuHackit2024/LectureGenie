@@ -1,5 +1,5 @@
 import streamlit as st
-import os 
+import os
 from PIL import Image
 
 # Setup session state variables
@@ -18,7 +18,7 @@ if "video_path" not in st.session_state:
 if "transcription_response" not in st.session_state:
     st.session_state["transcription_response"] = None
 
-#import the backend code for the video processing
+# import the backend code for the video processing
 import json
 from PIL import Image
 import cv2
@@ -30,11 +30,11 @@ from video_processing.keyframe.descriptor import get_descriptions
 from video_processing.keyframe.graber import timed_frames
 from processed_video import ProcessedVideo
 
-
 st.set_page_config(
     page_title="Video Processing",
-page_icon=Image.open("icon_icon.png"),
+    page_icon=Image.open("icon_icon.png"),
 )
+
 
 def update_progress():
     while True:
@@ -44,17 +44,16 @@ def update_progress():
         status.status(f"Generating descriptions for keyframes... {progress}/{len(frames)}")
         time.sleep(1)  # Sleep for 1 second
 
+
 import add_title
+
 add_title.add_logo()
 
 transcriber = VideoTranscriber(region="us-west-2", s3_bucket="transcibe-cuhackit", job_name_prefix="TRANSCRIBE")
 
-
-
 # Streamlit UI
 st.title("Video Processing")
 st.markdown("#### Upload Lecture Video")
-
 
 # Checking their are directories inside of data/
 available_folders = []
@@ -69,9 +68,6 @@ if os.path.exists("data"):
         st.session_state["processed_video"] = processed_video
         st.session_state["processed_video"].path_to_video = f"data/{selected_folder}/processed.mp4"
         st.success("Processed video loaded")
-
-
-
 
 uploaded_file = st.file_uploader("Choose a video file", type=["mp4", "mov", "avi", "wmv", "flv", "mkv", "webm"])
 
@@ -88,15 +84,14 @@ print("uploaded_file", uploaded_file)
 
 
 # Process and upload video
-if uploaded_file is not None and not st.session_state["transcription_started"] and st.button("Process and Upload Video"):
-    
-
+if uploaded_file is not None and not st.session_state["transcription_started"] and st.button(
+        "Process and Upload Video"):
     """
     Transcribing the video
     """
     # Assuming direct upload without any processing
     s3_file_name = f"processed_videos/{uploaded_file.name}"
-    
+
     # Upload the video to S3 directly from the uploaded file
     transcriber.upload_video_to_s3(uploaded_file, s3_file_name)
     status.status("Video uploaded to S3")
@@ -113,6 +108,27 @@ if st.session_state["transcription_started"] and not st.session_state["transcrib
     # blocking call to wait for the transcription to complete
     status.status("Waiting for transcription to complete...")
     st.session_state.transcription_response = transcriber.get_transcription_times(st.session_state["job_name"])
+
+    # If there are less than 2 segs
+    if len(st.session_state.transcription_response) < 2:
+        st.warning("This video doesn't have a lot of content to transcribe."
+                   "Relying on video content entirely.")
+        # Replacing it with 10 evenly spaced timestamps
+        # Get the lenght of the video in second using opencv
+        cap = cv2.VideoCapture(uploaded_file)
+        fps = cap.get(cv2.CAP_PROP_FPS)
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        cap.release()
+        timestamps = [i / fps for i in range(0, total_frames, total_frames // 10)]
+        st.session_state.transcription_response = []
+        # The end time is the start time of the next seg
+        for i in range(len(timestamps) - 1):
+            st.session_state.transcription_response.append({
+                "start_time": timestamps[i],
+                "end_time": timestamps[i + 1],
+                "transcript": "N/A"
+            })
+
     if st.session_state.transcription_response:
         status.status("Transcription complete")
         st.session_state["transcribed"] = True
@@ -142,11 +158,10 @@ if st.session_state["transcribed"] and not st.session_state["processed"]:
     # loading progress.txt to get the current progress
     print(f"frames: {len(frames)}")
     descriptions = get_descriptions([f[1] for f in frames])
-    
+
     if descriptions is None:
         st.error("Failed to generate descriptions for keyframes, have to run description script")
 
-        
     status.success("Descriptions generated")
     st.session_state["processed"] = True
 
@@ -174,5 +189,5 @@ if st.session_state["processed"] and st.session_state["processed_video"] is not 
         st.success(f"Processed video saved as {save_path}")
 
 else:
-    st.warning("No processed video to save -> " + str(st.session_state["processed_video"]) + " " + str(st.session_state["processed"]))
-
+    st.warning("No processed video to save -> " + str(st.session_state["processed_video"]) + " " + str(
+        st.session_state["processed"]))
