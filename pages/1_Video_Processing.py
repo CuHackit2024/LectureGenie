@@ -84,7 +84,7 @@ print("uploaded_file", uploaded_file)
 
 
 # Process and upload video
-if uploaded_file is not None and st.button("Process and Upload Video") and not st.session_state["transcription_started"]:
+if uploaded_file is not None and not st.session_state["transcription_started"] and st.button("Process and Upload Video"):
     with st.spinner('Uploading video to transcribe...'):
 
         """
