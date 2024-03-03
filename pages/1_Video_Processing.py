@@ -1,5 +1,4 @@
 import streamlit as st
-import threading
 
 # Setup session state variables
 if "processed" not in st.session_state:
@@ -10,7 +9,8 @@ if "transcribed" not in st.session_state:
     st.session_state["transcribed"] = False
 if "job_name" not in st.session_state:
     st.session_state["job_name"] = ""
-if "processed_video"
+if "processed_video" not in st.session_state:
+    st.session_state["processed_video"] = None
 
 #import the backend code for the video processing
 import json
@@ -22,6 +22,7 @@ import time
 from video_processing.transcript.video_transcriber import VideoTranscriber
 from video_processing.keyframe.descriptor import get_descriptions
 from video_processing.keyframe.graber import timed_frames
+from processed_video import ProcessedVideo
 
 
 st.set_page_config(
@@ -48,18 +49,32 @@ transcriber = VideoTranscriber(region="us-west-2", s3_bucket="transcibe-cuhackit
 st.title("Video Processing")
 st.markdown("#### Upload Lecture Video")
 
+# Reset button
+if st.button("Reset"):
+    st.session_state["processed"] = False
+    st.session_state["transcription_started"] = False
+    st.session_state["transcribed"] = False
+    st.session_state["job_name"] = ""
+    st.session_state["processed_video"] = None
+
+if st.button("activate skip"):
+    st.session_state["processed"] = False
+    st.session_state["transcribed"] = True
+
+
+
 uploaded_file = st.file_uploader("Choose a video file", type=["mp4", "mov", "avi", "wmv", "flv", "mkv", "webm"])
 
 status = st.empty()
 
 print("uploaded_file", uploaded_file)
 
-# When a new file is uploaded, reset the session state variables
-if uploaded_file is not None:
-    st.session_state["processed"] = False
-    st.session_state["transcription_started"] = True
-    st.session_state["transcribed"] = True
-    st.session_state["job_name"] = ""
+# # When a new file is uploaded, reset the session state variables
+# if uploaded_file is not None:
+#     st.session_state["processed"] = False
+#     st.session_state["transcription_started"] = True
+#     st.session_state["transcribed"] = True
+#     st.session_state["job_name"] = ""
 
 
 # Process and upload video
@@ -92,7 +107,7 @@ if st.session_state["transcription_started"] and not st.session_state["transcrib
             st.status("Transcription complete")
             st.session_state["transcribed"] = True
 
-if st.session_state["transcribed"]:
+if st.session_state["transcribed"] and not st.session_state["processed"] and st.button("SKIP TO KEYFRAMES"):
 
     """
     Processing video for keyframes
@@ -101,12 +116,11 @@ if st.session_state["transcribed"]:
     # Open the example/transcription_times.json file
     with open("examples/transcription_times.json", "r") as file:
         transcription_response = json.load(file)
+        # transcription_response = transcription_response[:30]
 
     start_times = []
     for t in transcription_response:
         start_times.append(float(t["start_time"]))
-
-    start_times = start_times[:30]
 
     # Save the video to a temp folder
     video_name = uploaded_file.name
@@ -124,3 +138,21 @@ if st.session_state["transcribed"]:
     descriptions = get_descriptions([f[1] for f in frames])
     status.success("Descriptions generated")
     st.session_state["processed"] = True
+
+    # Creating the processed video
+    processed_video = ProcessedVideo()
+    processed_video.create(transcription_response, descriptions)
+    st.session_state["processed_video"] = processed_video
+
+if st.session_state["processed"] and st.session_state["processed_video"] is not None:
+    processed_video = st.session_state["processed_video"]
+    # Ask for a save name
+    save_name = st.text_input("Save the processed video as (no extension)")
+    confirm_save = st.button("Save")
+    if confirm_save:
+        save_path = "data/" + save_name + ".json"
+        processed_video.save_to_json(save_path)
+        st.success(f"Processed video saved as {save_path}")
+else:
+    st.warning("No processed video to save -> " + str(st.session_state["processed_video"]) + " " + str(st.session_state["processed"]))
+
