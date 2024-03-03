@@ -1,0 +1,8 @@
+Given the following information from sections of a video, generate a list of terms and definitions to help the viewer remember the important information.
+
+$INFO
+
+You must provide the terms and definitions exactly as shown in the following format:
+
+Term: [Term here]
+Definition: [Definition of the term here]
