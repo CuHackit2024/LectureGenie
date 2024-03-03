@@ -7,7 +7,7 @@ SAMPLE_RATE = 16000
 BYTES_PER_SAMPLE = 2
 CHANNEL_NUMS = 1
 CHUNK_SIZE = 1024 * 8
-JOB_NAME = "TRANSCRIBE-CUHACKIT"
+JOB_NAME = "TRANSCRIBE-CUHACKIT2"
 S3_BUCKET = "transcibe-cuhackit"
 
 
@@ -22,21 +22,21 @@ with open(AUDIO_PATH, 'rb') as data:
 
 client = boto3.client('transcribe')
 
-# response = client.start_transcription_job(
-#     TranscriptionJobName=JOB_NAME,
-#     LanguageCode='en-US',  # Specify the language code appropriate for your audio
-#     MediaFormat='mp4',  # Specify the format of your audio file
-#     Media={
-#         'MediaFileUri': f's3://{S3_BUCKET}/GMT20231020-103151_Recording_2736x1824.mp4'
-#     },
-#     OutputBucketName=S3_BUCKET,
-#     OutputKey='output',
-#     Settings={
-#         'ShowSpeakerLabels': True,
-#         'MaxSpeakerLabels': 2,  # Adjust as needed
-#         'ChannelIdentification': False  # Change based on your audio file
-#     }
-# )
+response = client.start_transcription_job(
+    TranscriptionJobName=JOB_NAME,
+    LanguageCode='en-US',  # Specify the language code appropriate for your audio
+    MediaFormat='mp4',  # Specify the format of your audio file
+    Media={
+        'MediaFileUri': f's3://{S3_BUCKET}/GMT20231020-103151_Recording_2736x1824.mp4'
+    },
+    OutputBucketName=S3_BUCKET,
+    OutputKey='output/transcription.json',
+    Settings={
+        'ShowSpeakerLabels': True,
+        'MaxSpeakerLabels': 2,  # Adjust as needed
+        'ChannelIdentification': False  # Change based on your audio file
+    }
+)
 
 #get the transcript from the job
 
