@@ -1,14 +1,15 @@
 import boto3
 import streamlit as st
-#class that handles the transcription of the video
+# class that handles the transcription of the video
 
-#a function that transcribes the video
+# a function that transcribes the video
 
 # a function the json returned from the transcribe job and returns all the times as a list
 
 import boto3
 import time
 import json
+
 
 class VideoTranscriber:
     def __init__(self, region="us-west-2", s3_bucket="transcibe-cuhackit", job_name_prefix="TRANSCRIBE"):
@@ -17,8 +18,6 @@ class VideoTranscriber:
         self.job_name_prefix = job_name_prefix
         self.s3_client = boto3.client('s3', region_name=region)
         self.transcribe_client = boto3.client('transcribe', region_name=region)
-    
-
 
     def upload_video_to_s3(self, file_obj, s3_file_name):
         """Uploads a file-like object to an S3 bucket.
@@ -32,8 +31,8 @@ class VideoTranscriber:
         except Exception as e:
             print(f"Failed to upload file to S3: {e}")
 
-
-    def start_transcription_job(self, file_name, language_code='en-US', media_format='mp4', max_speaker_labels=2, show_speaker_labels=True):
+    def start_transcription_job(self, file_name, language_code='en-US', media_format='mp4', max_speaker_labels=2,
+                                show_speaker_labels=True):
         job_name = f"{self.job_name_prefix}-{int(time.time())}"
         media_uri = f"s3://{self.s3_bucket}/{file_name}"
 
@@ -49,10 +48,10 @@ class VideoTranscriber:
                 # 'MaxSpeakerLabels': max_speaker_labels,
                 'ShowAlternatives': True,
                 'MaxAlternatives': 2,
-                
+
             }
         )
-        
+
         print(f"Started transcription job: {job_name}")
         return job_name
 
@@ -69,25 +68,24 @@ class VideoTranscriber:
             transcript_file_uri = status['TranscriptionJob']['Transcript']['TranscriptFileUri']
             # Download and process the transcript JSON
             transcript_file = self.s3_client.get_object(Bucket=self.s3_bucket, Key=transcript_file_uri.split('/')[-1])
-            #download transcript file into directory
-            
-            
+            # download transcript file into directory
+
             transcript_text = json.loads(transcript_file['Body'].read().decode('utf-8'))
-            
+
             segment_details = []
 
             for segment in transcript_text['results']['segments']:
                 start_time = segment['start_time']
                 end_time = segment['end_time']
                 transcript = segment['alternatives'][0]['transcript'] if segment['alternatives'] else 'N/A'
-                
+
                 # Create a dictionary for the current segment
                 segment_dict = {
                     "start_time": start_time,
                     "end_time": end_time,
                     "transcript": transcript
                 }
-                
+
                 # Append the dictionary to the list of segment details
                 segment_details.append(segment_dict)
 

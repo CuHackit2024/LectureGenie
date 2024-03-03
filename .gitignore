@@ -5,3 +5,4 @@ lecturegenie/my_transcription_result.json
 /keys.toml
 *__pycache__*
 /sample_video/
+/vids/
