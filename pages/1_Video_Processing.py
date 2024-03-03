@@ -88,8 +88,11 @@ if st.session_state["processed"] and st.button("Check Transcription Status"):
             if times:
                 st.write("Transcription Times:", times)
 
-                with open('transcription_times.json', 'w') as f:
+                with open('examples/transcription_times.json', 'w') as f:
                     json.dump(times, f)
+                
+                
+
 
                 st.success("Transcription times saved to transcription_times.json")
 
