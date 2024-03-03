@@ -73,18 +73,22 @@ class VideoTranscriber:
             
             transcript_text = json.loads(transcript_file['Body'].read().decode('utf-8'))
             
-            segment_details = {}
+            segment_details = []
 
             for segment in transcript_text['results']['segments']:
                 start_time = segment['start_time']
                 end_time = segment['end_time']
                 transcript = segment['alternatives'][0]['transcript'] if segment['alternatives'] else 'N/A'
                 
-                # Concatenate start and end times into a single string key
-                time_key = f"{start_time}-{end_time}"
+                # Create a dictionary for the current segment
+                segment_dict = {
+                    "start_time": start_time,
+                    "end_time": end_time,
+                    "transcript": transcript
+                }
                 
-                # Use the concatenated time string as the key
-                segment_details[time_key] = transcript
+                # Append the dictionary to the list of segment details
+                segment_details.append(segment_dict)
 
                 print(segment_details)
 
