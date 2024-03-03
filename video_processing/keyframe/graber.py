@@ -24,7 +24,9 @@ def timed_frames(video_path: str, timestamps: list[int] = None, number_frames=No
     assert (timestamps is None) != (number_frames is None), "Either timestamps or number_frames must be provided"
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
-    if timestamps is None:
+    if timestamps is None or len(timestamps) < 2:
+        if number_frames is None:
+            number_frames = 10
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         frame_counts = np.linspace(0, total_frames - 1, number_frames, dtype=int)
         timestamps = [i / fps for i in frame_counts]
