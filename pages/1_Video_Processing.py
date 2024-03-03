@@ -72,9 +72,10 @@ if uploaded_file is not None and st.button("Process and Upload Video"):
         
         # Upload the video to S3 directly from the uploaded file
         transcriber.upload_video_to_s3(uploaded_file, s3_file_name)
-        
+        print("Finished uploading video to S3")
         # Start the transcription job
         job_name = transcriber.start_transcription_job(s3_file_name)
+        print("Finished starting transcription job")
         st.session_state["job_name"] = job_name
         st.session_state["processed"] = True
         st.success(f"Video uploaded and transcription job started with name: {job_name}")
