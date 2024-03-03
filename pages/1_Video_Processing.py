@@ -14,6 +14,8 @@ if "processed_video" not in st.session_state:
     st.session_state["processed_video"] = None
 if "video_path" not in st.session_state:
     st.session_state["video_path"] = None
+if "transcription_response" not in st.session_state:
+    st.session_state["transcription_response"] = None
 
 #import the backend code for the video processing
 import json
@@ -63,7 +65,8 @@ if st.button("Reset"):
 if st.button("activate skip"):
     st.session_state["processed"] = False
     st.session_state["transcribed"] = True
-
+    st.session_state["transcription_response"] = json.load(open("data/data_science_full.json", "r"))
+    st.session_state["transcription_response"] = st.session_state["transcription_response"]["segments"]
 
 
 uploaded_file = st.file_uploader("Choose a video file", type=["mp4", "mov", "avi", "wmv", "flv", "mkv", "webm"])
@@ -105,8 +108,8 @@ if st.session_state["transcription_started"] and not st.session_state["transcrib
         Waiting for the transcription to complete
         """
         # blocking call to wait for the transcription to complete
-        transcription_response = transcriber.get_transcription_times(st.session_state["job_name"])
-        if transcription_response:
+        st.session_state.transcription_response = transcriber.get_transcription_times(st.session_state["job_name"])
+        if st.session_state.transcription_response:
             st.status("Transcription complete")
             st.session_state["transcribed"] = True
 
@@ -116,13 +119,8 @@ if st.session_state["transcribed"] and not st.session_state["processed"]:
     Processing video for keyframes
     """
 
-    # # Open the example/transcription_times.json file
-    # with open("examples/transcription_times.json", "r") as file:
-    #     transcription_response = json.load(file)
-    #     # transcription_response = transcription_response[:30]
-
     start_times = []
-    for t in transcription_response:
+    for t in st.session_state.transcription_response:
         start_times.append(float(t["start_time"]))
 
     # Save the video to a temp folder
@@ -150,7 +148,7 @@ if st.session_state["transcribed"] and not st.session_state["processed"]:
 
     # Creating the processed video
     processed_video = ProcessedVideo()
-    processed_video.create(transcription_response, descriptions)
+    processed_video.create(st.session_state.transcription_response, descriptions)
     st.session_state["processed_video"] = processed_video
 
 if st.session_state["processed"] and st.session_state["processed_video"] is not None:
@@ -159,9 +157,18 @@ if st.session_state["processed"] and st.session_state["processed_video"] is not 
     save_name = st.text_input("Save the processed video as (no extension)")
     confirm_save = st.button("Save")
     if confirm_save:
-        save_path = "data/" + save_name + ".json"
-        processed_video.save_to_json(save_path)
+        save_folder_path = f"data/{save_name}"
+        os.makedirs(save_folder_path, exist_ok=True)
+        json_save_path = save_folder_path + "/processed.json"
+
+        processed_video.save_to_json(json_save_path)
+
+        # Also sav the vid there
+        save_path = save_folder_path + "/processed.mp4"
+        with open(save_path, "wb") as file:
+            file.write(uploaded_file.getvalue())
         st.success(f"Processed video saved as {save_path}")
+
 else:
     st.warning("No processed video to save -> " + str(st.session_state["processed_video"]) + " " + str(st.session_state["processed"]))
 
