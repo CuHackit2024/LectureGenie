@@ -2,6 +2,7 @@ import streamlit as st
 from io import BytesIO
 #import the backend code for the video processing
 import os
+import json
 
 from video_processor import VideoTranscriber
 transcriber = VideoTranscriber(region="us-west-2", s3_bucket="transcibe-cuhackit", job_name_prefix="TRANSCRIBE")
@@ -88,6 +89,12 @@ if st.session_state["processed"] and st.button("Check Transcription Status"):
             times = transcriber.get_transcription_times(st.session_state["job_name"])
             if times:
                 st.write("Transcription Times:", times)
+
+                with open('transcription_times.json', 'w') as f:
+                    json.dump(times, f)
+
+                st.success("Transcription times saved to transcription_times.json")
+
             else:
                 st.write("Transcription still in progress or failed.")
     else:
