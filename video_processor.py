@@ -98,3 +98,26 @@ class VideoTranscriber:
         else:
             print("Transcription job failed.")
             return None
+        
+
+    def get_transcription_text(self, job_name):
+        # Poll for the job to complete
+        while True:
+            status = self.transcribe_client.get_transcription_job(TranscriptionJobName=job_name)
+            if status['TranscriptionJob']['TranscriptionJobStatus'] in ['COMPLETED', 'FAILED']:
+                break
+            print("Waiting for transcription job to complete...")
+            time.sleep(5)
+
+        if status['TranscriptionJob']['TranscriptionJobStatus'] == 'COMPLETED':
+            transcript_file_uri = status['TranscriptionJob']['Transcript']['TranscriptFileUri']
+            # Download and process the transcript JSON
+            transcript_file = self.s3_client.get_object(Bucket=self
+            .s3_bucket, Key=transcript_file_uri.split('/')[-1])
+            #download transcript file into directory
+            transcript_text = json.loads(transcript_file['Body'].read().decode('utf-8'))
+
+            transcript_text = transcript_text['results']['transcripts'][0]['transcript']
+            return transcript_text
+
+        
