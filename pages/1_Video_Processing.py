@@ -1,4 +1,5 @@
 import streamlit as st
+from PIL import Image
 
 # Setup session state variables
 if "processed" not in st.session_state:
@@ -11,6 +12,8 @@ if "job_name" not in st.session_state:
     st.session_state["job_name"] = ""
 if "processed_video" not in st.session_state:
     st.session_state["processed_video"] = None
+if "video_path" not in st.session_state:
+    st.session_state["video_path"] = None
 
 #import the backend code for the video processing
 import json
@@ -27,7 +30,7 @@ from processed_video import ProcessedVideo
 
 st.set_page_config(
     page_title="Video Processing",
-    page_icon="🧊",
+page_icon=Image.open("icon_icon.png"),
 )
 
 def update_progress():
@@ -107,16 +110,16 @@ if st.session_state["transcription_started"] and not st.session_state["transcrib
             st.status("Transcription complete")
             st.session_state["transcribed"] = True
 
-if st.session_state["transcribed"] and not st.session_state["processed"] and st.button("SKIP TO KEYFRAMES"):
+if st.session_state["transcribed"] and not st.session_state["processed"]:
 
     """
     Processing video for keyframes
     """
 
-    # Open the example/transcription_times.json file
-    with open("examples/transcription_times.json", "r") as file:
-        transcription_response = json.load(file)
-        # transcription_response = transcription_response[:30]
+    # # Open the example/transcription_times.json file
+    # with open("examples/transcription_times.json", "r") as file:
+    #     transcription_response = json.load(file)
+    #     # transcription_response = transcription_response[:30]
 
     start_times = []
     for t in transcription_response:
@@ -127,7 +130,7 @@ if st.session_state["transcribed"] and not st.session_state["processed"] and st.
     path = f"vids/{video_name}"
     os.makedirs("vids", exist_ok=True)
     with open(path, "wb") as file:
-        file.write(uploaded_file.read())
+        file.write(uploaded_file.getvalue())
 
     # Get the keyframes from the video
     status.status(f"Getting {len(start_times)} keyframes from the video...")
@@ -135,7 +138,13 @@ if st.session_state["transcribed"] and not st.session_state["processed"] and st.
     status.success("Keyframes extracted")
     status.status("Generating descriptions for keyframes...")
     # loading progress.txt to get the current progress
+    print(f"frames: {len(frames)}")
     descriptions = get_descriptions([f[1] for f in frames])
+    
+    if descriptions is None:
+        st.error("Failed to generate descriptions for keyframes, have to run description script")
+
+        
     status.success("Descriptions generated")
     st.session_state["processed"] = True
 
