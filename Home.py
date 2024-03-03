@@ -10,6 +10,9 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+import add_title
+add_title.add_logo()
+
 if "processed" not in st.session_state:
     st.session_state["processed"] = None
 if "processed_video" not in st.session_state:

@@ -6,10 +6,10 @@ def add_logo():
         """
         <style>
             [data-testid="stSidebarNav"] {
-                background-image: url("");
+                background-image: url("https://raw.githubusercontent.com/CuHackit2024/LectureGenie/main/icon_small.png");
                 background-repeat: no-repeat;
                 padding-top: 120px;
-                background-position: 20px 20px;
+                background-position: 40px 20px;
             }
             [data-testid="stSidebarNav"]::before {
                 content: "Lecture Genie";
@@ -17,7 +17,7 @@ def add_logo():
                 margin-top: 20px;
                 font-size: 30px;
                 position: relative;
-                top: 100px;
+                top: 30px;
             }
         </style>
         """,
