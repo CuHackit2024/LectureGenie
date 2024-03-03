@@ -1,8 +1,9 @@
 import streamlit as st
+from PIL import Image
 
 st.set_page_config(
     page_title="Generate a Notes Sheet",
-    page_icon="🧊",
+page_icon=Image.open("icon_icon.png"),
 )
 
 import add_title
