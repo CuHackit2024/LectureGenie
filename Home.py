@@ -34,9 +34,9 @@ st.write("##### A web application to help you understand and retain information 
 st.markdown(
     """
 
-    1. **Upload your lecture video/slides** to the application for processing
+    1. **Upload your lecture video** to the application for processing
     2. **Save the processed media** to your device for future reference
-    3. Once the video has been processed you can [probably put pictures in for each bullet point]
+    3. Once the video has been processed you can:
         - **Use generated quiz questions** with the processed information
         - **Generate a general notes sheet** and save it to your device
         - **Generate flashcards** for important terms from your media
