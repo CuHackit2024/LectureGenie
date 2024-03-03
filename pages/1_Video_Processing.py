@@ -1,4 +1,5 @@
 import streamlit as st
+from PIL import Image
 
 # Setup session state variables
 if "processed" not in st.session_state:
@@ -11,6 +12,8 @@ if "job_name" not in st.session_state:
     st.session_state["job_name"] = ""
 if "processed_video" not in st.session_state:
     st.session_state["processed_video"] = None
+if "video_path" not in st.session_state:
+    st.session_state["video_path"] = None
 
 #import the backend code for the video processing
 import json
@@ -27,7 +30,7 @@ from processed_video import ProcessedVideo
 
 st.set_page_config(
     page_title="Video Processing",
-    page_icon="🧊",
+page_icon=Image.open("icon_icon.png"),
 )
 
 def update_progress():

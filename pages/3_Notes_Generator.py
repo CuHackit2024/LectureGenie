@@ -64,6 +64,12 @@ from processed_video import ProcessedVideo
 # Initialize or fetch necessary data
 transcriber = VideoTranscriber(region="us-west-2", s3_bucket="transcibe-cuhackit", job_name_prefix="TRANSCRIBE")
 job_name = st.session_state.get('job_name', '')
+from PIL import Image
+
+st.set_page_config(
+    page_title="Generate a Notes Sheet",
+page_icon=Image.open("icon_icon.png"),
+)
 
 def get_combined_content():
     """Fetches the transcript and descriptions, combines them, and returns the combined text."""
