@@ -113,9 +113,16 @@ if st.session_state["transcription_started"] and not st.session_state["transcrib
     if len(st.session_state.transcription_response) < 2:
         st.warning("This video doesn't have a lot of content to transcribe."
                    "Relying on video content entirely.")
+
+        # Save the video to a temp folder
+        video_name = uploaded_file.name
+        path = f"vids/{video_name}"
+        os.makedirs("vids", exist_ok=True)
+        with open(path, "wb") as file:
+            file.write(uploaded_file.getvalue())
         # Replacing it with 10 evenly spaced timestamps
         # Get the lenght of the video in second using opencv
-        cap = cv2.VideoCapture(uploaded_file)
+        cap = cv2.VideoCapture("vids/" + video_name)
         fps = cap.get(cv2.CAP_PROP_FPS)
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         cap.release()
