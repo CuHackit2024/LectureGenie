@@ -1,6 +1,9 @@
-Given the following information from sections of a video, generate a list of terms and definitions to help the viewer remember the important information.
+Given the following information from sections of a video, generate a list of terms and definitions that you find important
+for the viewer to learn and remember. You can be pretty loose with what you find important
+If a term is already in the list of terms, you must not repeat it under any circumstances, this is very important.
 
-$INFO
+List of Terms: $TERMS
+Here is the information to look through: $INFO
 
 You must provide the terms and definitions exactly as shown in the following format:
 

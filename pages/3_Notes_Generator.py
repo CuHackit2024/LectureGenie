@@ -59,6 +59,7 @@ import streamlit as st
 from notecard_generation.notecard_generator import NotecardGenerator  # Adjust the import path
 from video_processing.transcript.video_transcriber import VideoTranscriber  # Ensure this is your transcriber class
 from processed_video import ProcessedVideo
+import json
 # Assuming necessary imports and setup are done here
 
 # Initialize or fetch necessary data
@@ -70,6 +71,12 @@ st.set_page_config(
     page_title="Generate a Notes Sheet",
 page_icon=Image.open("icon_icon.png"),
 )
+if "processed_video" not in st.session_state or not st.session_state["processed_video"]:
+        print("processed_video not in session state")
+        #create a file path data/data_science_full.json
+        video = ProcessedVideo()
+        video = video.load_from_json("data/data_science_full.json")
+        st.session_state["processed_video"] = video
 
 def get_combined_content():
     """Fetches the transcript and descriptions, combines them, and returns the combined text."""
@@ -77,22 +84,25 @@ def get_combined_content():
     descriptions = ""
     
     # Fetch transcript if available
-    if job_name:
-        transcript_text = transcriber.get_transcription_text(job_name)
     
+    transcript_text = transcriber.get_transcription_text("TRANSCRIBE-1709461907")
     
+    print(f"transcript_text: {transcript_text}")
     #if processed_video is not in the sessions state make the json from the example and put it in the session state
-    if "processed_video" not in st.session_state:
-        #create a file path data/data_science_full.json
-
-
-        st.session_state["processed_video"] = ProcessedVideo.load_from_json("/Users/justinsilva/cuhackit/lecturegenie/data/data_science_full.json")
     
+    with open("data/data_science_full.json", "rb") as file:
+        video = ProcessedVideo()
+        video = json.load(file)
+        st.session_state["processed_video"] = video
+
     
+    print(f"processed_video: {st.session_state['processed_video']}")
     # Compile descriptions if available
-    if 'processed_video' in st.session_state and st.session_state['processed_video']:
-        descriptions = ". ".join([segment['frame_description'] for segment in st.session_state["processed_video"].segments])
+    if st.session_state['processed_video']:
+        print("processed_video in session state")
+        descriptions = ". ".join([segment['frame_description'] for segment in video['segments']])
     
+    print(f"descriptions: {descriptions}")
     return transcript_text, descriptions
 
 if st.button('Generate Notecards'):
