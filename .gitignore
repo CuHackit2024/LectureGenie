@@ -3,3 +3,5 @@ lecturegenie/my_transcription_result.json
 /venv/
 .idea/
 /keys.toml
+*__pycache__*
+/sample_video/
