@@ -83,6 +83,9 @@ st.set_page_config(
     page_icon="🧊",
 )
 
+import add_title
+add_title.add_logo()
+
 st.subheader("Generate Flash Cards")
 
 # temporary code to simulate the process of generating quiz questions
