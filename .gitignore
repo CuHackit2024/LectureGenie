@@ -6,3 +6,4 @@ lecturegenie/my_transcription_result.json
 *__pycache__*
 /sample_video/
 /vids/
+/progress.txt
