@@ -49,14 +49,14 @@ st.markdown(
 
 
 images = []
-for file in ["Video_Processing.jpg", "Video_Quiz.jpg", "Notes_Generator.jpg", "Flashcard_Generator.jpg"]:
+for file in ["icons/Video_Processing.png", "icons/Video_Quiz.png", "icons/Notes_Generator.png", "icons/Flashcard_Generator.png"]:
     with open(file, "rb") as image:
         encoded = base64.b64encode(image.read()).decode()
         images.append(f"data:image/jpeg;base64,{encoded}")
 
 clicked = clickable_images(
     images,
-    titles=[f"Image #{str(i)}" for i in range(2)],
+    titles=[f"Image #{str(i)}" for i in range(0)],
     div_style={"display": "flex", "justify-content": "left", "flex-wrap": "wrap"},
     img_style={"margin": "5px", "height": "160px"},
 )
@@ -64,10 +64,46 @@ clicked = clickable_images(
 col4, col5, col6, col7= st.columns(4)
 
 
-col4.write("Video Processing")
-col5.write("Video Quiz")
-col6.write("Notes Generator")
-col7.write("Flashcard Generator")
+# Replace "Your text here" with your desired content
+text = ["Video Processing", "Video Quiz", "Notes Generator", "Flashcard Generator"]
+
+st.markdown(f"""
+<style>
+  body {{
+    margin: 0; /* Remove default browser margins */
+    padding: 0; /* Remove default browser paddings */
+  }}
+
+  .text-container {{
+    display: flex; /* Arrange elements horizontally */
+    justify-content: space-around; /* Evenly distributed elements with space on edges */
+    width: 100%; /* Stretch the container to full width */
+    margin-top: -50px; /* Add top margin for spacing */
+  }}
+
+  .text {{
+    padding: 10px; /* Add padding to each text element */
+    border: none; /* Remove default border */
+    margin-right: 10px; /* Add spacing between elements */
+  }}
+
+  .text:first-child {{ /* Style the first text element (Video Processing) */
+    margin-left: -5px; /* Add left margin for spacing */
+  }}
+
+  .text:last-child {{ /* Style the last text element (Flashcard Generator) */
+    margin-right: 5px; /* Add right margin for spacing */
+  }}
+
+  .text:nth-child(3) {{ /* Style the third element (Notes Generator) */
+    margin-right: -25px; /* Shift it slightly to the right */
+  }}
+</style>
+
+<div class="text-container">
+  {''.join([f'<div class="text">{item}</div>' for item in text])}
+</div>
+""", unsafe_allow_html=True)
 
 if(clicked == 0):
     switch_page("Video Processing")
