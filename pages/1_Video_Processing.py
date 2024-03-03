@@ -3,20 +3,18 @@ from io import BytesIO
 #import the backend code for the video processing
 import os
 
+
 from video_processor import VideoTranscriber
+
+
+st.set_page_config(
+    page_title="Video Processing",
+    page_icon="🧊",
+)
+import add_title
+add_title.add_logo()
+
 transcriber = VideoTranscriber(region="us-west-2", s3_bucket="transcibe-cuhackit", job_name_prefix="TRANSCRIBE")
-
-# if "processed" not in st.session_state:
-#     st.session_state["processed"] = None
-# if "processed_video" not in st.session_state:
-#     st.session_state["processed_video"] = None
-# if "video" not in st.session_state:
-#     st.session_state["video"] = None
-
-# st.set_page_config(
-#     page_title="Video Processing",
-#     page_icon="🧊",
-# )
 
 # st.title("Video Processing")
 
@@ -60,7 +58,6 @@ if "job_name" not in st.session_state:
     st.session_state["job_name"] = ""
 
 # Streamlit UI
-st.set_page_config(page_title="Video Processing", page_icon="🧊")
 st.title("Video Processing")
 st.markdown("#### Upload your lecture video/slides to the application for processing by selecting the file below")
 
