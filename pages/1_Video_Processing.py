@@ -92,8 +92,10 @@ if st.session_state["processed"] and st.button("Check Transcription Status"):
                     json.dump(times, f)
                 
                 
+                
 
-
+                
+            
                 st.success("Transcription times saved to transcription_times.json")
 
             else:
