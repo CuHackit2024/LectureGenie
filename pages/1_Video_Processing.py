@@ -1,4 +1,5 @@
 import streamlit as st
+import os 
 from PIL import Image
 
 # Setup session state variables
@@ -67,6 +68,23 @@ if st.button("activate skip"):
     st.session_state["transcribed"] = True
     st.session_state["transcription_response"] = json.load(open("data/data_science_full.json", "r"))
     st.session_state["transcription_response"] = st.session_state["transcription_response"]["segments"]
+
+
+# Checking their are directories inside of data/
+available_folders = []
+if os.path.exists("data"):
+    available_folders = [f for f in os.listdir("data") if os.path.isdir(f"data/{f}")]
+    # Provide a dropdown to select the folder
+    selected_folder = st.selectbox("Select a folder to load a processed video", available_folders)
+    if st.button("Load processed video"):
+        # Load the processed video
+        processed_video = ProcessedVideo()
+        processed_video.load_from_json(f"data/{selected_folder}/processed.json")
+        st.session_state["processed_video"] = processed_video
+        st.session_state["processed_video"].path_to_video = f"data/{selected_folder}/processed.mp4"
+        st.success("Processed video loaded")
+
+
 
 
 uploaded_file = st.file_uploader("Choose a video file", type=["mp4", "mov", "avi", "wmv", "flv", "mkv", "webm"])

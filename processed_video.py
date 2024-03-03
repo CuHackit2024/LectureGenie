@@ -4,6 +4,7 @@ import json
 class ProcessedVideo:
     def __init__(self):
         self.segments = []
+        self.path_to_video = None
 
     def create(self, transcript: list[dict], frame_descriptions: list[str]):
         print("Transcript len: ", len(transcript))
