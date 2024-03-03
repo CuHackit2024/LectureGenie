@@ -11,6 +11,9 @@ st.set_page_config(
     page_icon="🧊",
 )
 
+import add_title
+add_title.add_logo()
+
 st.title("Interactive Video")
 #
 # if st.session_state.processed_video is not None:
