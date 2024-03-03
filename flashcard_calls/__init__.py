@@ -1,5 +1,6 @@
 import pandas as pd
 import json
+import streamlit as st 
 
 def parse(definitions_text, df):
     lines = definitions_text.split("\n")
@@ -21,23 +22,21 @@ def parse(definitions_text, df):
 
     return df
 
-def parse_processed(processed_video):
-    # Load the JSON file into a dictionary
-    with open(processed_video, 'r') as f:
-        processed_video = json.load(f)
+def parse_processed():
+    processed_video = st.session_state.processed_video
 
     texts = []
 
     # Loop over the segments in chunks of 10
-    for i in range(0, len(processed_video["segments"]), 10):
+    for i in range(0, len(processed_video.segments), 10):
         # Initialize an empty string to store the texts for the current chunk
         chunk_texts = ""
 
         # Loop over the current chunk of segments
-        for segment in processed_video["segments"][i:i + 10]:
+        for segment in processed_video.segments[i:i + 10]:
             # Extract the text and frame description
-            text = segment["text"]
-            frame_description = segment["frame_description"]
+            text = segment.text
+            frame_description = segment.frame_description
 
             # Add the text and frame description to the chunk texts
             chunk_texts += text + "\n\n" + frame_description + "\n\n"
