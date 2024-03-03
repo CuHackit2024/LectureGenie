@@ -12,4 +12,3 @@ enableXsrfProtection = false
 enableWebsocketCompression = false
 headless = true
 port = 8501
-enableStaticFiles = true  # Set this to true

@@ -1,102 +1,126 @@
 import streamlit as st
-from io import BytesIO
+import threading
+
+# Setup session state variables
+if "processed" not in st.session_state:
+    st.session_state["processed"] = False
+if "transcription_started" not in st.session_state:
+    st.session_state["transcription_started"] = False
+if "transcribed" not in st.session_state:
+    st.session_state["transcribed"] = False
+if "job_name" not in st.session_state:
+    st.session_state["job_name"] = ""
+if "processed_video"
+
 #import the backend code for the video processing
-import os
 import json
+from PIL import Image
+import cv2
+import os
+import time
 
-
-from video_processor import VideoTranscriber
+from video_processing.transcript.video_transcriber import VideoTranscriber
+from video_processing.keyframe.descriptor import get_descriptions
+from video_processing.keyframe.graber import timed_frames
 
 
 st.set_page_config(
     page_title="Video Processing",
     page_icon="🧊",
 )
+
+def update_progress():
+    while True:
+        with open("progress.txt", "r") as file:
+            progress = file.read().strip()
+            progress = float(progress)
+        status.status(f"Generating descriptions for keyframes... {progress}/{len(frames)}")
+        time.sleep(1)  # Sleep for 1 second
+
 import add_title
 add_title.add_logo()
 
 transcriber = VideoTranscriber(region="us-west-2", s3_bucket="transcibe-cuhackit", job_name_prefix="TRANSCRIBE")
 
-# st.title("Video Processing")
 
-# st.markdown("#### Upload your lecture video/slides to the application for processing by selecting the file below")
-
-# uploaded_file = st.file_uploader("Choose a video file", type=["mp4", "mov", "avi", "wmv", "flv", "mkv", "webm"])
-
-# st.session_state['video'] = uploaded_file
-
-# if st.session_state['video'] is not None:
-#     if st.button("Process Video"):
-#         if st.session_state['video'] is not None:
-#             #process the video, making sure to display a progress bar for the user
-#             #st.session_state['processed_video'] = process_video(st.session_state['video'])
-#             st.session_state['processed'] = True
-#             pass
-#         else:
-#             st.error("Please upload a video file")
-
-# st.markdown("#### (Optional) Save the processed video to your device for future use, or just use"
-#             " your processed video in this session")
-
-# if st.session_state['processed']:
-#     filename = st.text_input("Enter file name to save predicted data")
-#     #username = st.session_state["username"]
-#     if st.button("Save Processed Video"):
-#         if not os.path.exists("data"):
-#             os.makedirs("data")
-#             # os.makedirs(f"""predicted/{username}""")
-#         # file_path = f"predicted/{username}/{filename}.csv"
-#         file_path = f"data/{filename}.csv"
-#         st.session_state.output.to_csv(file_path, index=False)
-#         st.session_state.processed = False
-#         st.success("Processed video saved")
-
-
-# Setup session state variables
-if "processed" not in st.session_state:
-    st.session_state["processed"] = False
-if "job_name" not in st.session_state:
-    st.session_state["job_name"] = ""
 
 # Streamlit UI
 st.title("Video Processing")
-st.markdown("#### Upload your lecture video/slides to the application for processing by selecting the file below")
+st.markdown("#### Upload Lecture Video")
 
 uploaded_file = st.file_uploader("Choose a video file", type=["mp4", "mov", "avi", "wmv", "flv", "mkv", "webm"])
 
+status = st.empty()
+
+print("uploaded_file", uploaded_file)
+
+# When a new file is uploaded, reset the session state variables
+if uploaded_file is not None:
+    st.session_state["processed"] = False
+    st.session_state["transcription_started"] = True
+    st.session_state["transcribed"] = True
+    st.session_state["job_name"] = ""
+
+
 # Process and upload video
-if uploaded_file is not None and st.button("Process and Upload Video"):
-    with st.spinner('Processing video...'):
+if uploaded_file is not None and st.button("Process and Upload Video") and not st.session_state["transcription_started"]:
+    with st.spinner('Uploading video to transcribe...'):
+
+        """
+        Transcribing the video
+        """
         # Assuming direct upload without any processing
         s3_file_name = f"processed_videos/{uploaded_file.name}"
         
         # Upload the video to S3 directly from the uploaded file
         transcriber.upload_video_to_s3(uploaded_file, s3_file_name)
-        print("Finished uploading video to S3")
+        st.status("Video uploaded to S3")
         # Start the transcription job
         job_name = transcriber.start_transcription_job(s3_file_name)
-        print("Finished starting transcription job")
+        st.status("Transcription job started")
         st.session_state["job_name"] = job_name
-        st.session_state["processed"] = True
-        st.success(f"Video uploaded and transcription job started with name: {job_name}")
+        st.session_state["transcription_started"] = True
 
-# Check Transcription Status
-if st.session_state["processed"] and st.button("Check Transcription Status"):
-    if st.session_state["job_name"]:
-        with st.spinner('Checking transcription status...'):
-            times = transcriber.get_transcription_times(st.session_state["job_name"])
-            if times:
-                st.write("Transcription Times:", times)
+if st.session_state["transcription_started"] and not st.session_state["transcribed"]:
+    with st.spinner("Waiting for transcription to complete..."):
+        """
+        Waiting for the transcription to complete
+        """
+        # blocking call to wait for the transcription to complete
+        transcription_response = transcriber.get_transcription_times(st.session_state["job_name"])
+        if transcription_response:
+            st.status("Transcription complete")
+            st.session_state["transcribed"] = True
 
-                with open('examples/transcription_times.json', 'w') as f:
-                    json.dump(times, f)
-                
-                
+if st.session_state["transcribed"]:
 
+    """
+    Processing video for keyframes
+    """
 
-                st.success("Transcription times saved to transcription_times.json")
+    # Open the example/transcription_times.json file
+    with open("examples/transcription_times.json", "r") as file:
+        transcription_response = json.load(file)
 
-            else:
-                st.write("Transcription still in progress or failed.")
-    else:
-        st.error("No transcription job to check.")
+    start_times = []
+    for t in transcription_response:
+        start_times.append(float(t["start_time"]))
+
+    start_times = start_times[:30]
+
+    # Save the video to a temp folder
+    video_name = uploaded_file.name
+    path = f"vids/{video_name}"
+    os.makedirs("vids", exist_ok=True)
+    with open(path, "wb") as file:
+        file.write(uploaded_file.read())
+
+    # Get the keyframes from the video
+    status.status(f"Getting {len(start_times)} keyframes from the video...")
+    frames = timed_frames(path, timestamps=start_times)
+    status.success("Keyframes extracted")
+    status.status("Generating descriptions for keyframes...")
+    # loading progress.txt to get the current progress
+    descriptions = get_descriptions([f[1] for f in frames])
+    status.success("Descriptions generated")
+    st.session_state["processed"] = True
