@@ -1,4 +1,5 @@
 import streamlit as st
+import threading
 
 # Setup session state variables
 if "processed" not in st.session_state:
@@ -9,15 +10,17 @@ if "transcribed" not in st.session_state:
     st.session_state["transcribed"] = False
 if "job_name" not in st.session_state:
     st.session_state["job_name"] = ""
+if "processed_video"
 
 #import the backend code for the video processing
 import json
 from PIL import Image
 import cv2
 import os
+import time
 
 from video_processing.transcript.video_transcriber import VideoTranscriber
-from video_processing.keyframe.descriptor import Descriptor
+from video_processing.keyframe.descriptor import get_descriptions
 from video_processing.keyframe.graber import timed_frames
 
 
@@ -25,6 +28,15 @@ st.set_page_config(
     page_title="Video Processing",
     page_icon="🧊",
 )
+
+def update_progress():
+    while True:
+        with open("progress.txt", "r") as file:
+            progress = file.read().strip()
+            progress = float(progress)
+        status.status(f"Generating descriptions for keyframes... {progress}/{len(frames)}")
+        time.sleep(1)  # Sleep for 1 second
+
 import add_title
 add_title.add_logo()
 
@@ -94,6 +106,8 @@ if st.session_state["transcribed"]:
     for t in transcription_response:
         start_times.append(float(t["start_time"]))
 
+    start_times = start_times[:30]
+
     # Save the video to a temp folder
     video_name = uploaded_file.name
     path = f"vids/{video_name}"
@@ -104,8 +118,9 @@ if st.session_state["transcribed"]:
     # Get the keyframes from the video
     status.status(f"Getting {len(start_times)} keyframes from the video...")
     frames = timed_frames(path, timestamps=start_times)
-    my_descriptor = Descriptor()
-    status.status(f"Generating {len(frames)} descriptions for keyframes...")
-    descriptions = my_descriptor.generate_descriptions([Image.fromarray(f[1]) for f in frames])
-    status.text("Descriptions generated")
+    status.success("Keyframes extracted")
+    status.status("Generating descriptions for keyframes...")
+    # loading progress.txt to get the current progress
+    descriptions = get_descriptions([f[1] for f in frames])
+    status.success("Descriptions generated")
     st.session_state["processed"] = True

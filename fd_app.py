@@ -24,16 +24,23 @@ def generate_description(data):
     image = Image.fromarray(image)
     model = genai.GenerativeModel('gemini-pro-vision')
 
-    print(f"{i} - using key: {key}")
+    # print(f"{i} - using key: {key}")
     genai.configure(api_key=key)
-    print(f"{i} - Configured")
+    # print(f"{i} - Configured")
     response = model.generate_content([prompt, image])
-    print(f"{i} - Generated")
+    # print(f"{i} - Generated")
     try:
         response_text = response.text
     except ValueError:
         print(f"\t{i} - Error")
         return ""
+    # Read the current progress in the file
+    with open("progress.txt", "r") as file:
+        progress = file.read().strip()
+        progress = float(progress)
+    # Write the current progress in the file
+    with open("progress.txt", "w") as file:
+        file.write(str(progress + 1))
 
     return response_text
 
@@ -65,19 +72,22 @@ class Descriptor:
             data.append((i, array_image, self.key, prompt))
             self.cycle_key()
 
-        with Pool(12) as p:
+        with Pool(8) as p:
             descriptions = list(tqdm(p.imap(generate_description, data), total=len(data)))
 
         return descriptions
 
 @app.route('/generate_descriptions', methods=['POST'])
 def handle_api_request():
+    with open("progress.txt", "w") as file:
+        file.write("0")
+
     # Print everything that was sent in the request to help with debugging
     image_file_tuples = request.files.items()
     # Composed of tuples of (filename, file) the file is <FileStorage: 'image_0' (None)>
 
     images = [Image.open(BytesIO(i[1].read())) for i in image_file_tuples]
-    print("images: ", images)
+    print(f"Received {len(images)} images.")
     descriptor = Descriptor()
     descriptions = descriptor.generate_descriptions(images)
 
