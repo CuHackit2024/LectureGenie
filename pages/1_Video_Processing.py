@@ -3,7 +3,10 @@ from io import BytesIO
 #import the backend code for the video processing
 import os
 
+
 from video_processor import VideoTranscriber
+
+
 transcriber = VideoTranscriber(region="us-west-2", s3_bucket="transcibe-cuhackit", job_name_prefix="TRANSCRIBE")
 
 # if "processed" not in st.session_state:
@@ -12,11 +15,12 @@ transcriber = VideoTranscriber(region="us-west-2", s3_bucket="transcibe-cuhackit
 #     st.session_state["processed_video"] = None
 # if "video" not in st.session_state:
 #     st.session_state["video"] = None
-
-# st.set_page_config(
-#     page_title="Video Processing",
-#     page_icon="🧊",
-# )
+import add_title
+st.set_page_config(
+    page_title="Video Processing",
+    page_icon="🧊",
+)
+add_title.add_logo()
 
 # st.title("Video Processing")
 
