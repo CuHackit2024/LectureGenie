@@ -72,11 +72,8 @@ st.set_page_config(
 page_icon=Image.open("icon_icon.png"),
 )
 if "processed_video" not in st.session_state or not st.session_state["processed_video"]:
-        print("processed_video not in session state")
-        #create a file path data/data_science_full.json
-        video = ProcessedVideo()
-        video = video.load_from_json("data/data_science_full.json")
-        st.session_state["processed_video"] = video
+    st.error("Please process a video before generating notecards.")
+    st.stop()
 
 def get_combined_content():
     """Fetches the transcript and descriptions, combines them, and returns the combined text."""
@@ -90,17 +87,14 @@ def get_combined_content():
     print(f"transcript_text: {transcript_text}")
     #if processed_video is not in the sessions state make the json from the example and put it in the session state
     
-    with open("data/data_science_full.json", "rb") as file:
-        video = ProcessedVideo()
-        video = json.load(file)
-        st.session_state["processed_video"] = video
+    video = st.session_state['processed_video']
 
     
     print(f"processed_video: {st.session_state['processed_video']}")
     # Compile descriptions if available
     if st.session_state['processed_video']:
         print("processed_video in session state")
-        descriptions = ". ".join([segment['frame_description'] for segment in video['segments']])
+        descriptions = ". ".join([segment.frame_description for segment in video.segments])
     
     print(f"descriptions: {descriptions}")
     return transcript_text, descriptions

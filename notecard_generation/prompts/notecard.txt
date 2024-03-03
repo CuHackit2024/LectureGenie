@@ -1,0 +1,11 @@
+Given the information provided from different segments of an educational video, create valuable notes for students. These notes should be detailed, aiming to encapsulate essential insights and knowledge conveyed in the video. To augment learning and ensure a thorough understanding, include a true/false question based on the content. The question should be clear and directly related to the video's material, designed to challenge the student's comprehension and recall.
+
+The format for each true/false question should be as follows:
+
+<start>
+Question: [Insert the question based on the video content here]
+IsTrue: [Specify 'True' or 'False']
+Explanation: [Provide a comprehensive explanation detailing why the chosen answer is correct, ensuring to clarify any nuances or key points highlighted in the video. This explanation should reinforce the student's understanding and correct any misconceptions.]
+<end>
+
+This structured approach not only aids in reviewing the video's content but also stimulates critical thinking and application of knowledge.
