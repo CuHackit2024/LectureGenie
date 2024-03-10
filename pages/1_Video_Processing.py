@@ -48,18 +48,20 @@ if st.session_state["username"] is None:
     st.warning("You need to be logged in to access this page")
 
 if st.session_state["video_processing_stage"] == "upload_video" and st.session_state["username"] is not None:
+    users_path = f"user_data/{st.session_state['username']}"
     st.markdown("#### Upload Lecture Video")
     st.write("Choose an already processed video to load")
+
     if st.session_state["username"] is not None:
-        available_folders = os.listdir(f"user_data/{st.session_state['username']}")
+        available_folders = os.listdir(users_path)
         selected_folder = st.selectbox("Select a folder to load an already processed video", available_folders)
         if len(available_folders) > 0 and st.button("Load processed video"):
             # Load the processed video
             processed_video = ProcessedVideo()
-            processed_video.load_from_json(f"data/{selected_folder}/processed.json")
+            processed_video.load_from_json(f"{users_path}/{selected_folder}/processed.json")
             st.session_state["processed_video"] = processed_video
             st.session_state[
-                "processed_video"].path_to_video = f"user_data/{st.session_state['username']}/{selected_folder}/processed.mp4"
+                "processed_video"].path_to_video = f"{users_path}/{selected_folder}/processed.mp4"
             st.success("Processed video loaded")
             st.session_state["video_processing_stage"] = "finished"
     else:
@@ -70,15 +72,15 @@ if st.session_state["video_processing_stage"] == "upload_video" and st.session_s
     if uploaded_file is not None:
         # Create a folder using the name of the video
         video_name = uploaded_file.name.split(".")[0]
-        os.makedirs(f"user_data/{video_name}", exist_ok=True)
+        os.makedirs(f"{users_path}/{video_name}", exist_ok=True)
 
         st.session_state["processed_video"] = ProcessedVideo()
         st.session_state[
-            "processed_video"].path_to_video = f"user_data/{st.session_state['username']}/{video_name}/processed.mp4"
+            "processed_video"].path_to_video = f"{users_path}/{video_name}/processed.mp4"
 
         # If the video name folder doesn't exist, create it
-        if not os.path.exists(f"user_data/{st.session_state['username']}/{video_name}"):
-            os.makedirs(f"user_data/{st.session_state['username']}/{video_name}")
+        if not os.path.exists(f"{users_path}/{video_name}"):
+            os.makedirs(f"{users_path}/{video_name}")
 
         with open(st.session_state["processed_video"].path_to_video, "wb") as file:
             file.write(uploaded_file.getvalue())

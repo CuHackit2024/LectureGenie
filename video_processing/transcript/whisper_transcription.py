@@ -15,8 +15,11 @@ def transcribe(video_path):
     :param video_path: The path to the video file
     :return: The transcript
     """
+    try:
+        audio = AudioSegment.from_file(video_path)
+    except IndexError:
+        return []
 
-    audio = AudioSegment.from_file(video_path)
     audio_length = len(audio)
     segment_length = 60 * 1000
     segments = []
