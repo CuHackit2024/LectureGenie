@@ -28,10 +28,15 @@ def get_descriptions(images):
         files[f"image_{i}"] = image_data
 
     # Send the POST request with the images
-    response = requests.post(
-        f"{server_address}:{server_port}/generate_descriptions",
-        files=files
-    )
+    try:
+        response = requests.post(
+            f"{server_address}:{server_port}/generate_descriptions",
+            files=files
+        )
+    except requests.exceptions.ConnectionError:
+        print("Error: Could not connect to the video description server")
+        return None
+
 
     # Check for successful response
     if response.status_code == 200:

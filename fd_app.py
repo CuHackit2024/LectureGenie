@@ -3,9 +3,7 @@ This application runs completly separate from the main application.
 It hosts a multiprocessing setup for getting the frame descriptions quickly
 """
 
-import multiprocessing
 from multiprocessing import Pool
-import queue
 import google.generativeai as genai
 from toml import load
 from PIL import Image

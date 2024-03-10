@@ -1,8 +1,6 @@
 import streamlit as st
-import video_playback
-import os
 import datetime
-from processed_video import ProcessedVideo
+from video_processing.processed_video import ProcessedVideo
 from quiz_questions import quiz_generator
 from quiz_questions import quiz_frontend
 from PIL import Image

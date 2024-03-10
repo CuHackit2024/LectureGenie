@@ -1,7 +1,7 @@
 from .utils import AVAILABLE_QUESTIONS
 import google.generativeai as genai
 import toml
-from processed_video import ProcessedVideo
+from video_processing.processed_video import ProcessedVideo
 import random
 
 
