@@ -162,3 +162,4 @@ if st.session_state["video_processing_stage"] == "finished":
     processed_video = st.session_state["processed_video"]
     # Save the json
     processed_video.save_to_json(f"user_data/{st.session_state['username']}/{video_name}/processed.json")
+

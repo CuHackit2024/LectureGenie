@@ -37,7 +37,6 @@ def get_descriptions(images):
         print("Error: Could not connect to the video description server")
         return None
 
-
     # Check for successful response
     if response.status_code == 200:
         # Parse the JSON response and access the description

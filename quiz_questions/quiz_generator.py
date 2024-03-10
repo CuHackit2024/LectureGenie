@@ -1,7 +1,11 @@
 from .utils import AVAILABLE_QUESTIONS
 import google.generativeai as genai
 import toml
+<<<<<<< HEAD
 from video_processing.processed_video import ProcessedVideo
+=======
+from processed_video import ProcessedVideo
+>>>>>>> 31cd1e3041bfe12909b73116295e4b4b2ff39ca5
 import random
 
 

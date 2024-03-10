@@ -15,7 +15,6 @@ st.set_page_config(
 import add_title
 add_title.add_logo()
 
-
 if "username" not in st.session_state:
     st.session_state["username"] = None
 
@@ -46,11 +45,20 @@ if st.session_state["username"] is None:
 st.markdown(
     """
 
+<<<<<<< HEAD
     1. **Go to Video Processing** to upload your video
     2. Once the video has been processed you can:
         - **Go to Video Quiz** for an interactive quiz
         - **Go to Notes Generator** to get detailed notes
         - **Go to Flashcard Generator** to get flashcards
+=======
+    1. **Upload your lecture video** to the application for processing
+    2. **Save the processed media** to your device for future reference
+    3. Once the video has been processed you can:
+        - **Use generated quiz questions** with the processed information
+        - **Generate a general notes sheet** and save it to your device
+        - **Generate flashcards** for important terms from your media
+>>>>>>> 31cd1e3041bfe12909b73116295e4b4b2ff39ca5
 """
 )
 
