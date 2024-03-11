@@ -1,5 +1,6 @@
 import requests
 import base64
+import toml
 
 
 def describe_image(prompt, encoded_image, api_key):
@@ -41,7 +42,7 @@ def describe_image(prompt, encoded_image, api_key):
 
 
 if __name__ == '__main__':
-    api_key = 'AIzaSyBR4g73IPCH3cwALW4UC2qxeKoxWtS_Iow'
+    api_key = toml.load('config.toml')['gemini']['api_keys'][0]
     image_path = 'sample_video/friendship.png'
 
     with open(image_path, 'rb') as file:

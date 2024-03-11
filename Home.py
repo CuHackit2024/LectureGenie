@@ -12,8 +12,6 @@ st.set_page_config(
     page_icon=Image.open("icons/icon_icon.png"),
 )
 
-import add_title
-add_title.add_logo()
 
 if "username" not in st.session_state:
     st.session_state["username"] = None

@@ -39,7 +39,7 @@ class Descriptor:
         :param images: The images to describe
         :return: A list of descriptions of the images
         """
-        prompt = open("video_processing/keyframe/prompts/description_prompt.txt", "r").read().strip()
+        prompt = open("video_processing/backend/keyframe/prompts/description_prompt.txt", "r").read().strip()
         data = []
         for i, image in enumerate(images):
             data.append((i, image, self.key, prompt))

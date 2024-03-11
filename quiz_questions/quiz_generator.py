@@ -1,11 +1,7 @@
 from .utils import AVAILABLE_QUESTIONS
 import google.generativeai as genai
 import toml
-<<<<<<< HEAD
 from video_processing.processed_video import ProcessedVideo
-=======
-from processed_video import ProcessedVideo
->>>>>>> 31cd1e3041bfe12909b73116295e4b4b2ff39ca5
 import random
 
 
@@ -85,7 +81,8 @@ class QuizQuestionMaker:
                     options.append(line[3:].strip())
 
         if question is None:
-            raise ValueError("Question not found in response: " + response_text)
+            print("Question not initially found, using the first line after <start>")
+            question = lines[0]
         assert answer is not None
         assert len(options) == 4
 

@@ -5,6 +5,13 @@ class ProcessedVideo:
     def __init__(self):
         self.segments = []
         self.path_to_video = None
+        self.video_name = "N/A"
+
+    def check_all_good(self):
+        assert self.segments is not None, "Segments is None"
+        assert self.path_to_video is not None, "Path to video is None"
+        assert self.video_name != "N/A", "Video name is N/A"
+        assert len(self.segments) > 0, "Segments is empty"
 
     def add_descriptions(self, descriptions: list[str]):
         for i, description in enumerate(descriptions):
@@ -21,7 +28,6 @@ class ProcessedVideo:
         }
         with open(file_path, "w") as file:
             json.dump(data, file)
-
 
     def get_shortest_pair(self):
         """

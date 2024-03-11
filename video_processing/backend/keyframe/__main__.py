@@ -1,4 +1,3 @@
-from PIL import Image
 from . import descriptor
 from . import graber
 import time

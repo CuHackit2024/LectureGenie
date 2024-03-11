@@ -57,7 +57,7 @@
 
 import streamlit as st
 from notecard_generation.notecard_generator import NotecardGenerator  # Adjust the import path
-from video_processing.transcript.video_transcriber import VideoTranscriber  # Ensure this is your transcriber class
+from video_processing.backend.transcript import VideoTranscriber  # Ensure this is your transcriber class
 
 # Assuming necessary imports and setup are done here
 

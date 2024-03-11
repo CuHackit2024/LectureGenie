@@ -1,7 +1,14 @@
 import streamlit as st
 
+
 def add_logo():
+    if "processed_video" not in st.session_state:
+        st.session_state["processed_video"] = None
     # The image is stored at icon.png
+
+    # Access the video name from the session state
+    video_name = st.session_state["processed_video"].video_name if st.session_state["processed_video"] else None
+
     st.markdown(
         """
         <style>
@@ -14,12 +21,24 @@ def add_logo():
             [data-testid="stSidebarNav"]::before {
                 content: "Lecture Genie";
                 margin-left: 20px;
-                margin-top: 20px;
+                margin-top: 40px;
                 font-size: 30px;
-                position: relative;
-                top: 30px;
+                position: absolute;
             }
         </style>
         """,
         unsafe_allow_html=True,
     )
+
+    # Add the CSS to your app's head
+    if video_name:
+        text_to_display = f"Currently loaded video: **{video_name}**"
+    else:
+        text_to_display = "No video loaded"
+    # Create a container at the bottom of the sidebar
+    bottom_container = st.sidebar.empty()
+
+    bottom_container.markdown(f"{text_to_display}")
+
+
+add_logo()

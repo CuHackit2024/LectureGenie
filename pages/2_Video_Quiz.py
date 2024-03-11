@@ -9,7 +9,7 @@ from PIL import Image
 
 st.set_page_config(
     page_title="Interactive Video",
-page_icon=Image.open("icon_icon.png"),
+    page_icon=Image.open("icons/icon_icon.png"),
 )
 
 if "video_path" not in st.session_state:
@@ -17,10 +17,10 @@ if "video_path" not in st.session_state:
 if "processed_video" not in st.session_state:
     st.session_state["processed_video"] = None
 
-if st.button("Use Demo Video"):
-    st.session_state.video_path = "sample_video/data_science.mp4"
-    st.session_state.processed_video = ProcessedVideo()
-    st.session_state.processed_video.load_from_json("data/data_science_full.json")
+# if st.button("Use Demo Video"):
+#     st.session_state.video_path = "sample_video/data_science.mp4"
+#     st.session_state.processed_video = ProcessedVideo()
+#     st.session_state.processed_video.load_from_json("data/data_science_full.json")
 
 
 import add_title
