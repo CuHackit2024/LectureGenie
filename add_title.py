@@ -1,7 +1,8 @@
 import streamlit as st
-
+import time
 
 def add_logo():
+    print("Add logo called: ", time.time())
     if "processed_video" not in st.session_state:
         st.session_state["processed_video"] = None
     # The image is stored at icon.png
@@ -29,16 +30,6 @@ def add_logo():
         """,
         unsafe_allow_html=True,
     )
-
-    # Add the CSS to your app's head
-    if video_name:
-        text_to_display = f"Currently loaded video: **{video_name}**"
-    else:
-        text_to_display = "No video loaded"
-    # Create a container at the bottom of the sidebar
-    bottom_container = st.sidebar.empty()
-
-    bottom_container.markdown(f"{text_to_display}")
 
 
 add_logo()

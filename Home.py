@@ -12,9 +12,9 @@ st.set_page_config(
     page_icon=Image.open("icons/icon_icon.png"),
 )
 
+from video_processing.frontend import process_video_frontend
+process_video_frontend()
 
-if "username" not in st.session_state:
-    st.session_state["username"] = None
 
 
 
@@ -26,24 +26,12 @@ col2.write(r"$\textsf{\Huge LectureGenie}$")
 
 st.write("##### Upload your lecture videos and get interactive quizzes, notes and flashcards")
 
-existing_usernames = os.listdir("user_data")
-
-if st.session_state["username"] is None:
-
-    username = st.text_input("Enter your username to access previously processed videos:")
-    if st.button("Submit"):
-        st.session_state["username"] = username
-        if st.session_state["username"] in existing_usernames:
-            st.success("Welcome back!")
-        else:
-            st.warning("New user detected. A new folder will be created for you.")
-            os.makedirs(f"user_data/{st.session_state['username']}")
 
 
 st.markdown(
     """
 
-    1. **Go to Video Processing** to upload your video
+    1. **Go to the sidebar** to login and/or upload a video
     2. Once the video has been processed you can:
         - **Go to Video Quiz** for an interactive quiz
         - **Go to Notes Generator** to get detailed notes
@@ -53,17 +41,11 @@ st.markdown(
 
 
 
-#col4.image('Video_Processing.jpg', use_column_width=True, caption='Video Processing')
-
-
-images = []
-for file in ["icons/Video_Processing.png", "icons/Video_Quiz.png", "icons/Notes_Generator.png", "icons/Flashcard_Generator.png"]:
-    with open(file, "rb") as image:
-        encoded = base64.b64encode(image.read()).decode()
-        images.append(f"data:image/jpeg;base64,{encoded}")
-
-
 # Embed ko-fi
 st.markdown(
    "[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/A0A5VDT0M)"
 )
+
+
+st.warning("Uploaded videos are not secure, anyone who knows your username can access your videos."
+           " Do not upload sensitive information. Videos will be deleted after 24 hours. This is only a prototype.")

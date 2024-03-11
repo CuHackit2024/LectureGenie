@@ -5,9 +5,8 @@ from video_processing.processed_video import ProcessedVideo
 
 def upload_video_frontend():
     users_path = f"user_data/{st.session_state['username']}"
-    st.markdown("#### Upload Lecture Video")
-    st.write("Choose an already processed video to load")
-
+    st.markdown("#### Select a lecture video")
+    st.markdown("Choose an already processed video **OR** upload a new video to process")
     if st.session_state["username"] is not None:
         available_folders = os.listdir(users_path)
         selected_folder = st.selectbox("Select a folder to load an already processed video", available_folders)

@@ -1,6 +1,7 @@
 import streamlit as st
 from video_processing.backend.keyframe import get_descriptions, timed_frames
 
+
 def keyframe_processing_frontend():
     """
     Processing video for keyframes
@@ -17,7 +18,6 @@ def keyframe_processing_frontend():
     status.success("Keyframes extracted")
     status.status("Generating descriptions for keyframes...")
     # loading progress.txt to get the current progress
-    print(f"frames: {len(frames)}")
     descriptions = get_descriptions([f[1] for f in frames])
 
     if descriptions is None:

@@ -26,18 +26,14 @@ if "processed_video" not in st.session_state:
 import add_title
 add_title.add_logo()
 
-st.title("Interactive Video")
-#
-# if st.session_state.processed_video is not None:
-#     st.markdown("""#### "You can now generate quiz questions.""")
-# else:
-#     st.error("Please go to video processing, and process a video before generating quiz questions.")
+from video_processing.frontend import process_video_frontend
+process_video_frontend()
 
-try:
-    if st.session_state.processed_video.path_to_video is None:
-        st.error("Please upload a video at the Video Processing page.")
-except AttributeError:
-    st.error("Please upload a video at the Video Processing page.")
+st.title("Interactive Video")
+
+if st.session_state.processed_video is None:
+    st.error("Please load a video before generating a quiz.")
+    st.stop()
 if "question_element" not in st.session_state:
     st.session_state.question_element = None
 if "start_time" not in st.session_state:
