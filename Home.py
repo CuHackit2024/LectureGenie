@@ -49,3 +49,5 @@ st.markdown(
 
 st.warning("Uploaded videos are not secure, anyone who knows your username can access your videos."
            " Do not upload sensitive information. Videos will be deleted after 24 hours. This is only a prototype.")
+st.warning("The things said and shown in the video are sent to a third party AI provider which may store the data for"
+           " improving their own services.")

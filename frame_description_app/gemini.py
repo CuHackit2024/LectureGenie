@@ -28,7 +28,7 @@ def describe_image(prompt, encoded_image, api_key):
     }
 
     headers = {'Content-Type': 'application/json'}
-
+    print("Using key: " + api_key)
     url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=' + api_key
 
     try:

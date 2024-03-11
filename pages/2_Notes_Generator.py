@@ -1,116 +1,56 @@
-
-# import streamlit as st
-# from notecard_generation.notecard_generator import NotecardGenerator  # Adjust the import path
-# from video_processing.transcript.video_transcriber import VideoTranscriber  # Ensure this is your transcriber class
-
-# # Assuming add_title.add_logo() is a custom function you've defined elsewhere
-# import add_title
-
-# # Set Streamlit page config
-# st.set_page_config(page_title="Generate a Notesheet", page_icon="🧊")
-
-# add_title.add_logo()
-
-# st.title("Generate A Notesheet")
-
-# # Initialize the VideoTranscriber
-# transcriber = VideoTranscriber(region="us-west-2", s3_bucket="transcibe-cuhackit", job_name_prefix="TRANSCRIBE")
-
-# # Check if a job name is already available in the session state
-# if 'job_name' in st.session_state and st.session_state['job_name']:
-#     job_name = st.session_state['job_name']
-#     # Proceed without asking for job name again
-#     st.write(f"Using job name from previous input: {job_name}")
-# else:
-#     # Ask for job name if not available in session state
-#     job_name = st.text_input("Enter the transcription job name")
-#     if job_name:
-#         st.session_state['job_name'] = job_name
-
-# if st.button('Fetch Transcript and Generate Notesheet') and job_name:
-#     # Fetch the transcript text using the transcriber
-#     transcript_text = transcriber.get_transcription_text(job_name)
-
-#     if transcript_text:
-#         # Generate notesheet from the fetched transcript
-#         generator = NotecardGenerator(transcript_text)
-#         notesheet_text = generator.generate_notecards()
-        
-#         # Save the notesheet text in session state to persist it
-#         st.session_state['notesheet_text'] = notesheet_text
-#     else:
-#         st.error("Failed to fetch transcript. Please check the job name and try again.")
-
-# # Display and offer download for notesheet if available
-# if 'notesheet_text' in st.session_state and st.session_state['notesheet_text']:
-#     st.markdown("## Notesheet Preview")
-#     st.markdown(st.session_state['notesheet_text'], unsafe_allow_html=True)
-    
-#     # Download button
-#     st.download_button(label="Download Notesheet as TXT",
-#                        data=st.session_state['notesheet_text'].encode('utf-8'),
-#                        file_name="notesheet.txt",
-#                        mime="text/plain")
-# else:
-#     # Message when there is no notesheet to display
-#     st.write("No notesheet to display. Please fetch a transcript to generate a notesheet.")
-
 import streamlit as st
-from notecard_generation.notecard_generator import NotecardGenerator  # Adjust the import path
-from video_processing.backend.transcript import VideoTranscriber  # Ensure this is your transcriber class
-
-# Assuming necessary imports and setup are done here
-
-# Initialize or fetch necessary data
-transcriber = VideoTranscriber(region="us-west-2", s3_bucket="transcibe-cuhackit", job_name_prefix="TRANSCRIBE")
-job_name = st.session_state.get('job_name', '')
+import random
 from PIL import Image
+import google.generativeai as genai
+import toml
 
 st.set_page_config(
     page_title="Generate a Notes Sheet",
-page_icon=Image.open("icon_icon.png"),
+    page_icon=Image.open("icons/icon_icon.png"),
 )
+
+if "notes" not in st.session_state:
+    st.session_state.notes = None
+
+from video_processing.frontend import process_video_frontend
+
+process_video_frontend()
+
+
+def start_over():
+    st.session_state.notes = None
+
+
+status = st.empty()
+
 if "processed_video" not in st.session_state or not st.session_state["processed_video"]:
-    st.error("Please process a video before generating notecards.")
+    st.error("Please load a video before generating notes.")
     st.stop()
 
-def get_combined_content():
-    """Fetches the transcript and descriptions, combines them, and returns the combined text."""
-    transcript_text = ""
-    descriptions = ""
-    
-    # Fetch transcript if available
-    
-    transcript_text = transcriber.get_transcription_text("TRANSCRIBE-1709461907")
-    
-    print(f"transcript_text: {transcript_text}")
-    #if processed_video is not in the sessions state make the json from the example and put it in the session state
-    
-    video = st.session_state['processed_video']
+if st.session_state.notes is None:
+    if st.button('Generate Notes'):
+        status.status("Processing video...")
 
-    
-    print(f"processed_video: {st.session_state['processed_video']}")
-    # Compile descriptions if available
-    if st.session_state['processed_video']:
-        print("processed_video in session state")
-        descriptions = ". ".join([segment.frame_description for segment in video.segments])
-    
-    print(f"descriptions: {descriptions}")
-    return transcript_text, descriptions
+        entire_video_as_string = ""
+        for seg in st.session_state["processed_video"].segments:
+            entire_video_as_string += f"""From {int(seg.start)} to {int(seg.end)} seconds, this was said: "{seg.text}" """
+            entire_video_as_string += "On the screen was: " + seg.frame_description + "\n\n"
 
-if st.button('Generate Notecards'):
-    transcript_text, descriptions = get_combined_content()
-    if not transcript_text and not descriptions:
-        st.error("No content available for generating notecards. Please ensure transcript and descriptions are available.")
-    else:
-        # Generate notecards from combined content
-        generator = NotecardGenerator(transcript_text, descriptions)
-        notecards_text = generator.generate_notecards()
-        if notecards_text:
-            st.session_state['notecards_text'] = notecards_text
-            st.markdown("## Generated Notecards")
-            st.markdown(notecards_text, unsafe_allow_html=True)
-            st.download_button(label="Download Notecards as TXT",
-                               data=notecards_text.encode('utf-8'),
-                               file_name="notecards.txt",
-                               mime="text/plain")
+        status.status("Generating notes... (this may take a while)")
+        prompt = "Create a notes sheet based on the following information: \n\n" + entire_video_as_string
+        api_keys = toml.load("keys.toml")['gemini']['keys']
+        genai.configure(api_key=random.choice(api_keys))
+        model = genai.GenerativeModel('gemini-pro')
+        response = model.generate_content([prompt])
+        st.session_state.notes = response.text
+        status.success("Notes generated!")
+
+if st.session_state.notes is not None:
+    st.markdown(st.session_state.notes)
+    video_name = st.session_state["processed_video"].video_name
+    st.download_button(label="Download Notes as a TXT File (human-readable)",
+                       data=st.session_state.notes.encode('utf-8'),
+                       file_name=f"{video_name}_notes.txt",
+                       mime="text/plain")
+
+    st.button("Reset Note Generator", on_click=start_over)
