@@ -3,7 +3,7 @@ import pandas as pd
 import random
 import google.generativeai as genai
 import toml
-import flashcard_calls
+from functionalities import flashcard_calls
 from PIL import Image
 st.set_page_config(
     page_title="Generate Flash Cards",

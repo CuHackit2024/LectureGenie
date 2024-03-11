@@ -1,17 +1,14 @@
 import streamlit as st
-import video_playback
-import os
 import datetime
-from processed_video import ProcessedVideo
-from quiz_questions import quiz_generator
-from quiz_questions import quiz_frontend
+from functionalities.quiz_questions import quiz_generator
+from functionalities.quiz_questions import quiz_frontend
 from PIL import Image
 
 
 
 st.set_page_config(
     page_title="Interactive Video",
-page_icon=Image.open("icon_icon.png"),
+    page_icon=Image.open("icons/icon_icon.png"),
 )
 
 if "video_path" not in st.session_state:
@@ -19,27 +16,23 @@ if "video_path" not in st.session_state:
 if "processed_video" not in st.session_state:
     st.session_state["processed_video"] = None
 
-if st.button("Use Demo Video"):
-    st.session_state.video_path = "sample_video/data_science.mp4"
-    st.session_state.processed_video = ProcessedVideo()
-    st.session_state.processed_video.load_from_json("data/data_science_full.json")
+# if st.button("Use Demo Video"):
+#     st.session_state.video_path = "sample_video/data_science.mp4"
+#     st.session_state.processed_video = ProcessedVideo()
+#     st.session_state.processed_video.load_from_json("data/data_science_full.json")
 
 
 import add_title
 add_title.add_logo()
 
-st.title("Interactive Video")
-#
-# if st.session_state.processed_video is not None:
-#     st.markdown("""#### "You can now generate quiz questions.""")
-# else:
-#     st.error("Please go to video processing, and process a video before generating quiz questions.")
+from video_processing.frontend import process_video_frontend
+process_video_frontend()
 
-try:
-    if st.session_state.processed_video.path_to_video is None:
-        st.error("Please upload a video at the Video Processing page.")
-except AttributeError:
-    st.error("Please upload a video at the Video Processing page.")
+st.title("Interactive Video")
+
+if st.session_state.processed_video is None:
+    st.error("Please load a video before generating a quiz.")
+    st.stop()
 if "question_element" not in st.session_state:
     st.session_state.question_element = None
 if "start_time" not in st.session_state:

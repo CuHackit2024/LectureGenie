@@ -1,8 +1,9 @@
 from .utils import AVAILABLE_QUESTIONS
 import google.generativeai as genai
 import toml
-from processed_video import ProcessedVideo
+from video_processing.processed_video import ProcessedVideo
 import random
+import copy
 
 
 class QuizQuestionMaker:
@@ -52,6 +53,7 @@ class QuizQuestionMaker:
         # Grab section between "<start>" and "<end>"
         start = response_text.find("<start>")
         end = response_text.find("<end>")
+        uncut_response_text = copy.deepcopy(response_text[start + 7:end].strip())
         response_text = response_text[start + 7:end].strip()
 
         lines = response_text.split("\n")
@@ -65,6 +67,10 @@ class QuizQuestionMaker:
         for line in lines:
             if line.startswith("Question:"):
                 question = line[9:].strip()
+                continue
+
+            elif line.startswith("on:"):
+                question = line[3:].strip()
                 continue
 
             elif line.startswith("Correct Answer:"):
@@ -81,7 +87,11 @@ class QuizQuestionMaker:
                     options.append(line[3:].strip())
 
         if question is None:
-            raise ValueError("Question not found in response: " + response_text)
+            print("Question not initially found, using the first line after <start>")
+            print("\nresponse.text:\n", response_text)
+            print("\n Uncut response text:\n", uncut_response_text)
+            print("\n\nlines:", lines)
+            question = lines[0]
         assert answer is not None
         assert len(options) == 4
 

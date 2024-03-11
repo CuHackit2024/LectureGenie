@@ -3,10 +3,7 @@ This application runs completly separate from the main application.
 It hosts a multiprocessing setup for getting the frame descriptions quickly
 """
 
-import multiprocessing
 from multiprocessing import Pool
-import queue
-import google.generativeai as genai
 from toml import load
 from PIL import Image
 from PIL import PngImagePlugin  # Can't remove this import
@@ -15,34 +12,13 @@ import random
 from flask import Flask, request, jsonify
 from io import BytesIO
 import numpy as np
+from .desciption_generator import generate_description
+import base64
 
 app = Flask(__name__)  # Create a Flask app
 
-def generate_description(data):
-    i, image, key, prompt = data
-    # convert image to PIL
-    image = Image.fromarray(image)
-    model = genai.GenerativeModel('gemini-pro-vision')
 
-    # print(f"{i} - using key: {key}")
-    genai.configure(api_key=key)
-    # print(f"{i} - Configured")
-    response = model.generate_content([prompt, image])
-    # print(f"{i} - Generated")
-    try:
-        response_text = response.text
-    except ValueError:
-        print(f"\t{i} - Error")
-        return ""
-    # Read the current progress in the file
-    with open("progress.txt", "r") as file:
-        progress = file.read().strip()
-        progress = float(progress)
-    # Write the current progress in the file
-    with open("progress.txt", "w") as file:
-        file.write(str(progress + 1))
 
-    return response_text
 
 
 class Descriptor:
@@ -51,7 +27,6 @@ class Descriptor:
         random.shuffle(self.keys)
         self.key_index = 0
         self.key = self.keys[self.key_index]
-        genai.configure(api_key=self.key)
 
     def cycle_key(self):
         self.key_index += 1
@@ -64,12 +39,10 @@ class Descriptor:
         :param images: The images to describe
         :return: A list of descriptions of the images
         """
-        prompt = open("video_processing/keyframe/prompts/description_prompt.txt", "r").read().strip()
+        prompt = open("video_processing/backend/keyframe/prompts/description_prompt.txt", "r").read().strip()
         data = []
         for i, image in enumerate(images):
-            # Convert the PIL image to ndarray
-            array_image = np.array(image)
-            data.append((i, array_image, self.key, prompt))
+            data.append((i, image, self.key, prompt))
             self.cycle_key()
 
         with Pool(8) as p:
@@ -77,21 +50,24 @@ class Descriptor:
 
         return descriptions
 
+
 @app.route('/generate_descriptions', methods=['POST'])
 def handle_api_request():
-    with open("progress.txt", "w") as file:
+    with open("../progress.txt", "w") as file:
         file.write("0")
 
     # Print everything that was sent in the request to help with debugging
     image_file_tuples = request.files.items()
     # Composed of tuples of (filename, file) the file is <FileStorage: 'image_0' (None)>
 
-    images = [Image.open(BytesIO(i[1].read())) for i in image_file_tuples]
+    images = [base64.b64encode(i[1].read()).decode('utf-8') for i in image_file_tuples]
+
     print(f"Received {len(images)} images.")
     descriptor = Descriptor()
     descriptions = descriptor.generate_descriptions(images)
 
     return jsonify({'descriptions': descriptions})  # Return list of descriptions as JSON
+
 
 if __name__ == '__main__':
     app.run(host='localhost', port=5000)  # Start the Flask app (adjust host/port as needed)
