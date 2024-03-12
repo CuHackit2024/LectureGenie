@@ -8,8 +8,11 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.9.16"
 streamlit = "^1.32.0"
-google-ai-generativelanguage = "^0.5.4"
 flask = "^3.0.2"
+opencv-python = "^4.9.0.80"
+pydub = "^0.25.1"
+matplotlib = "^3.8.3"
+google-generativeai = "^0.4.0"
 
 
 [build-system]

@@ -9,6 +9,10 @@ from datetime import datetime
 
 delete_time = 24 * 60 * 60  # 24 hours
 
+# If the user_data folder doesn't exist, create it
+if not os.path.exists("user_data"):
+    os.mkdir("user_data")
+
 while True:
     # Get all the user folders
     user_folders = os.listdir("user_data")

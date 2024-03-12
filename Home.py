@@ -1,10 +1,5 @@
 import streamlit as st
-from streamlit_extras.switch_page_button import switch_page
-import base64
-from st_clickable_images import clickable_images
 from PIL import Image
-from streamlit import components
-import os
 from video_processing.frontend import process_video_frontend
 
 st.set_page_config(
