@@ -41,8 +41,13 @@ def get_descriptions(images):
     if response.status_code == 200:
         # Parse the JSON response and access the description
         data = response.json()
-        print(data)
         descriptions = data["descriptions"]
+
+        # Remove the api key if it's shown in one of the descriptions
+        for i, description in enumerate(descriptions):
+            if "Error:" in description and "?key=" in description and "https://generativelanguage" in description:
+                descriptions[i] = "NA"
+
     else:
         print(f"Error: {response.status_code}")
 

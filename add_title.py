@@ -1,8 +1,8 @@
 import streamlit as st
 import time
 
+
 def add_logo():
-    print("Add logo called: ", time.time())
     if "processed_video" not in st.session_state:
         st.session_state["processed_video"] = None
     # The image is stored at icon.png

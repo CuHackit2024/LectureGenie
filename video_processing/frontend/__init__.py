@@ -18,12 +18,14 @@ def start_over():
 
 
 def process_video_frontend():
+    if st.session_state["video_processing_stage"] is None:
+        st.session_state["video_processing_stage"] = "upload_video"
     # Container for the video processing frontend
     video_processing_container = st.sidebar.container()
     with video_processing_container:
         login_frontend()
-
         if st.session_state["video_processing_stage"] == "upload_video" and st.session_state["username"] is not None:
+            print("uploading video")
             upload_video_frontend()
 
         if st.session_state["video_processing_stage"] == "transcribe_video":

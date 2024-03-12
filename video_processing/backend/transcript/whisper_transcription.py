@@ -3,6 +3,7 @@ import warnings
 from pydub import AudioSegment
 from utils import ProgressUpdate
 from video_processing.processed_video import Segment
+import streamlit as st
 
 model = whisper.load_model("tiny")
 
@@ -34,7 +35,8 @@ def transcribe(video_path):
         message = "Transcribing"
         yield ProgressUpdate(progress, message)
         # Temporarily saving the segment to a file
-        segment_path = "segment.wav"
+        user_path = f"user_data/{st.session_state.username}"
+        segment_path = f"{user_path}/segment.wav"
         segment.export(segment_path, format="wav")
 
         output = model.transcribe(segment_path)
