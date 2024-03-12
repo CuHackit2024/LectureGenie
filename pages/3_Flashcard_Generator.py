@@ -5,19 +5,33 @@ import google.generativeai as genai
 import toml
 from functionalities import flashcard_calls
 from PIL import Image
+
 st.set_page_config(
     page_title="Generate Flash Cards",
-page_icon=Image.open("icon_icon.png"),
+    page_icon=Image.open("icons/icon_icon.png"),
 )
+from video_processing.frontend import process_video_frontend
+
+process_video_frontend()
+
 # Checking if the st.session_state.processed_video exists
 if "processed_video" not in st.session_state or st.session_state.processed_video is None:
-    st.error("Please go to video processing, and process a video before generating flashcards. ")
+    st.error("Please load a video before generating flashcards.")
+    st.stop()
 
 if "flashcards" not in st.session_state:
     st.session_state.flashcards = None
+if "video_processing_stage" not in st.session_state:
+    st.session_state.video_processing_stage = None
 
 
 def flashcards_game(terms_definitions, definitions):
+    if len(terms_definitions) == 0:
+        st.error("No terms were given")
+        return
+    if len(definitions) == 0:
+        st.error("No definitions were given")
+        return
     flipped = st.checkbox("Flip Terms and Definitions", key="flip_terms_definitions")
 
     terms_definitions["Definition"] = definitions
@@ -60,8 +74,6 @@ def flashcards_game(terms_definitions, definitions):
             st.session_state.guess = ""
 
 
-
-
 import add_title
 
 add_title.add_logo()
@@ -74,25 +86,27 @@ if "term_definitions" not in st.session_state:
 
 if st.session_state.processed_video is not None:
     st.markdown("""Simply press the generate button below to generate some flashcards
-    from the processed video.""")
+    from the loaded video.""")
 
-    key = toml.load("keys.toml")["gemini"]['keys'][random.randint(0, 4)]
+    key = random.choice(toml.load("keys.toml")["gemini"]['keys'])
     genai.configure(api_key=key)
 
     if st.button("Generate Flashcards"):
         with st.spinner('Generating flashcards...'):
             st.session_state.flashcards = True
             model = genai.GenerativeModel('gemini-pro')
-            prompt = open("flashcard_calls/prompt.txt", "r").read().strip()
+            prompt = open("functionalities/flashcard_calls/prompt.txt", "r").read().strip()
 
             text_lists = flashcard_calls.parse_processed()
 
-            for(text) in text_lists:
+            for (text) in text_lists:
                 prompt = prompt.replace("$INFO", text)
-                prompt = prompt.replace("$TERMS", st.session_state.term_definitions["Definition"].to_string(index=False))
+                prompt = prompt.replace("$TERMS",
+                                        st.session_state.term_definitions["Definition"].to_string(index=False))
                 response = model.generate_content([prompt])
                 response_text = response.text
-                st.session_state.term_definitions = flashcard_calls.parse(response_text, st.session_state.term_definitions)
+                st.session_state.term_definitions = flashcard_calls.parse(response_text,
+                                                                          st.session_state.term_definitions)
 
             st.session_state.term_definitions['Term'] = st.session_state.term_definitions['Term'].str.lower()
             st.session_state.term_definitions = st.session_state.term_definitions.drop_duplicates(subset='Term')

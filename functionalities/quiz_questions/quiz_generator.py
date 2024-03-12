@@ -137,9 +137,9 @@ class QuizQuestionMaker:
         Ask a question based on the Gemini video.
         """
         if question_type == "Multiple Choice":
-            prompt = open("quiz_questions/prompts/mq_prompt.txt", "r").read().strip()
+            prompt = open("functionalities/quiz_questions/prompts/mq_prompt.txt", "r").read().strip()
         elif question_type == "True/False":
-            prompt = open("quiz_questions/prompts/tf_prompt.txt", "r").read().strip()
+            prompt = open("functionalities/quiz_questions/prompts/tf_prompt.txt", "r").read().strip()
         else:
             raise ValueError(f"Question type must be one of {AVAILABLE_QUESTIONS}")
 
@@ -160,7 +160,8 @@ class QuizQuestionMaker:
             "question": question,
             "answer": answer,
             "options": options,
-            "question_type": question_type
+            "question_type": question_type,
+            "explanation": explanation
         }
         return question_dict
 

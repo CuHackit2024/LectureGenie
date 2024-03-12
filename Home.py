@@ -5,6 +5,7 @@ from st_clickable_images import clickable_images
 from PIL import Image
 from streamlit import components
 import os
+from video_processing.frontend import process_video_frontend
 
 st.set_page_config(
     page_title="LectureGenie Home",
@@ -12,7 +13,10 @@ st.set_page_config(
     page_icon=Image.open("icons/icon_icon.png"),
 )
 
-from video_processing.frontend import process_video_frontend
+if "video_processing_stage" not in st.session_state:
+    st.session_state.video_processing_stage = None
+
+
 process_video_frontend()
 
 

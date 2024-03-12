@@ -11,6 +11,7 @@ if "processed_video" not in st.session_state:
 if "username" not in st.session_state:
     st.session_state["username"] = None
 
+
 def start_over():
     st.session_state["video_processing_stage"] = "upload_video"
     st.session_state["processed_video"] = None

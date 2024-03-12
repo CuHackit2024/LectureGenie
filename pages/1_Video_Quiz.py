@@ -56,7 +56,7 @@ with top_cols[1]:
         my_maker = quiz_generator.QuizQuestionMaker(start_time, start_time, st.session_state.processed_video)
         question = my_maker.get_question(question_type)
         # Show the quiz question
-        st.session_state.question_element = quiz_frontend.QuizQuestion(question["question"], question["answer"], question["options"], question["question_type"])
+        st.session_state.question_element = quiz_frontend.QuizQuestion(question["question"], question["answer"], question["options"], question["question_type"], question["explanation"])
 if st.session_state.question_element is not None:
     st.session_state.question_element.handle()
 

@@ -1,6 +1,7 @@
 import pandas as pd
 import json
-import streamlit as st 
+import streamlit as st
+
 
 def parse(definitions_text, df):
     lines = definitions_text.split("\n")
@@ -21,6 +22,7 @@ def parse(definitions_text, df):
     df = pd.concat([df, new_df], ignore_index=True)
 
     return df
+
 
 def parse_processed():
     processed_video = st.session_state.processed_video
@@ -45,4 +47,3 @@ def parse_processed():
         texts.append(chunk_texts)
 
     return texts
-

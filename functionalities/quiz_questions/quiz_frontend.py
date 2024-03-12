@@ -4,11 +4,12 @@ import hashlib
 
 
 class QuizQuestion:
-    def __init__(self, question, answer, options, question_type):
+    def __init__(self, question, answer, options, question_type, explanation):
         self.question = question
         self.answer = answer
         self.options = options
         self.question_type = question_type
+        self.explanation = explanation
 
         self.id = hashlib.sha256(self.question.encode()).hexdigest()
         self.given_answer = None
@@ -59,6 +60,7 @@ class QuizQuestion:
             print("Correct answer:", self.answer)
             if self.given_answer == self.answer:
                 st.success("Correct!")
+                st.info(self.explanation)
             else:
                 st.error("Incorrect!")
 

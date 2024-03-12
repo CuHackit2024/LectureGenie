@@ -9,7 +9,7 @@ def login_frontend():
     existing_usernames = os.listdir("user_data")
 
     username = st.text_input("Enter your username to use existing or upload new videos:")
-    if st.button("Submit"):
+    if st.button("Login"):
         st.session_state["username"] = username
         if st.session_state["username"] in existing_usernames:
             st.success("Welcome back!")
