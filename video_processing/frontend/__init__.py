@@ -11,7 +11,7 @@ def start_over():
 
 
 def process_video_frontend():
-    if "video_processing_stage" not in st.session_state:
+    if "video_processing_stage" not in st.session_state or st.session_state["video_processing_stage"] is None:
         st.session_state["video_processing_stage"] = "upload_video"
     if "processed_video" not in st.session_state:
         st.session_state["processed_video"] = None
