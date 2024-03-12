@@ -1,6 +1,7 @@
 import cv2
 import streamlit as st
 from video_processing.backend.transcript.whisper_transcription import transcribe
+from video_processing.processed_video import ProcessedVideo, Segment
 
 
 def transcribe_video_frontend():
@@ -31,11 +32,14 @@ def transcribe_video_frontend():
         st.session_state["processed_video"].segments = []
         # The end time is the start time of the next seg
         for i in range(len(timestamps) - 1):
-            st.session_state["processed_video"].segments.append({
-                "start_time": timestamps[i],
-                "end_time": timestamps[i + 1],
-                "transcript": "N/A"
-            })
+            # Using the segment object instead
+            st.session_state["processed_video"].segments.append(
+                Segment(
+                    start=timestamps[i],
+                    end=timestamps[i + 1],
+                    text="N/A",
+                )
+            )
 
         if len(st.session_state['processed_video'].segments) > 16:
             st.session_state['processed_video'].reduce_seg_count(16)

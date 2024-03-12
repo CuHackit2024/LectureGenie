@@ -92,13 +92,20 @@ class QuizQuestionMaker:
             print("\n Uncut response text:\n", uncut_response_text)
             print("\n\nlines:", lines)
             question = lines[0]
-        assert answer is not None
-        assert len(options) == 4
+
+        try:
+            assert answer is not None
+            assert len(options) == 4
+            assert question is not None
+            assert explanation is not None
+        except AssertionError:
+            raise ValueError("Could not parse the response text for a multiple choice question")
 
         return question, answer, options, explanation
 
     @staticmethod
     def parse_tf(response_text: str) -> tuple:
+        print("response_text:", response_text)
         """
         Parses the response from the model for a true/false question
         :param response_text: The response from the model
@@ -125,10 +132,12 @@ class QuizQuestionMaker:
 
             elif line.startswith("Explanation:"):
                 explanation = line[12:].strip()
-
-        assert question is not None
-        assert answer is not None
-        assert explanation is not None
+        try:
+            assert question is not None
+            assert answer is not None
+            assert explanation is not None
+        except AssertionError:
+            raise ValueError("Could not parse the response text for a true/false question")
 
         return question, answer, explanation
 
@@ -169,4 +178,3 @@ class QuizQuestionMaker:
 # Testing
 if __name__ == "__main__":
     pass
-

@@ -47,14 +47,23 @@ with top_cols[0]:
 
 with top_cols[1]:
     start_time_str = st.text_input("Question Time", "00:00")
-    start_time_dt = datetime.datetime.strptime(start_time_str, "%M:%S")
+    try:
+        start_time_dt = datetime.datetime.strptime(start_time_str, "%M:%S")
+    except ValueError:
+        st.error("Invalid time format. Please use mm\:ss")
+        st.stop()
+
     start_time = start_time_dt.minute * 60 + start_time_dt.second
     sub_cols = st.columns(2)
     question_type = st.selectbox("Question Type", ["Multiple Choice", "True/False"])
 
     if st.button("Generate Question"):
         my_maker = quiz_generator.QuizQuestionMaker(start_time, start_time, st.session_state.processed_video)
-        question = my_maker.get_question(question_type)
+        try:
+            question = my_maker.get_question(question_type)
+        except ValueError as e:
+            st.error(str(e) + " Please try a different time or try again.")
+            st.stop()
         # Show the quiz question
         st.session_state.question_element = quiz_frontend.QuizQuestion(question["question"], question["answer"], question["options"], question["question_type"], question["explanation"])
 if st.session_state.question_element is not None:
