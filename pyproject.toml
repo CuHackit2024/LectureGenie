@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "lecturegenie"
+version = "0.1.0"
+description = ""
+authors = ["Elan456 <telan4892@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+streamlit = "^1.32.0"
+google-ai-generativelanguage = "^0.5.4"
+flask = "^3.0.2"
+openai-whisper = {git = "https://github.com/openai/whisper.git", rev = "ba3f3cd54b0e5b8ce1ab3de13e32122d0d5f98ab"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
