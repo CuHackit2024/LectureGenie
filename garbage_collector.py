@@ -14,12 +14,15 @@ if not os.path.exists("user_data"):
     os.mkdir("user_data")
 
 while True:
+    print(datetime.now(), "| Start a collection cycle")
     # Get all the user folders
     user_folders = os.listdir("user_data")
     for user_folder in user_folders:
         # Get all the video folders
         video_folders = os.listdir(f"user_data/{user_folder}")
         for video_folder in video_folders:
+            if not os.path.isdir(f"user_data/{user_folder}/{video_folder}"):
+                continue
             # Get the time the video was created
             video_folder_path = f"user_data/{user_folder}/{video_folder}"
             video_time = os.path.getctime(video_folder_path)
@@ -31,5 +34,7 @@ while True:
                 shutil.rmtree(video_folder_path)
 
             else:
-                print(f"{video_folder_path} is {age // 60} minutes old, not deleting it yet")
+                # Getting age in hours, minutes
+                str_age = f"{age // 3600} hours, {(age % 3600) // 60} minutes"
+                print(f"{video_folder_path} is {str_age} old, not deleting it yet")
     time.sleep(60 * 60)  # Check every hour
