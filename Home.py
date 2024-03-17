@@ -7,6 +7,8 @@ st.set_page_config(
     layout="centered",
     page_icon=Image.open("icons/icon_icon.png"),
 )
+import add_title
+add_title.add_logo()
 
 if "video_processing_stage" not in st.session_state:
     st.session_state.video_processing_stage = None
@@ -40,13 +42,16 @@ st.markdown(
 
 
 
-# Embed ko-fi
-st.markdown(
-   "[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/A0A5VDT0M)"
-)
+
 
 
 st.warning("Uploaded videos are not secure, anyone who knows your username can access your videos."
            " Do not upload sensitive information. Videos will be deleted after 24 hours. This is only a prototype.")
 st.warning("The things said and shown in the video are sent to a third party AI provider which may store the data for"
            " improving their own services.")
+
+
+# Embed ko-fi
+st.markdown(
+   "[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/A0A5VDT0M)"
+)

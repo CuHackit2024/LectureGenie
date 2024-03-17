@@ -10,7 +10,11 @@ st.set_page_config(
     page_title="Generate Flash Cards",
     page_icon=Image.open("icons/icon_icon.png"),
 )
+
 from video_processing.frontend import process_video_frontend
+
+import add_title
+add_title.add_logo()
 
 process_video_frontend()
 

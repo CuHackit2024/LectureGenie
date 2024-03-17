@@ -22,11 +22,13 @@ if "processed_video" not in st.session_state:
 #     st.session_state.processed_video.load_from_json("data/data_science_full.json")
 
 
-import add_title
-add_title.add_logo()
+
 
 from video_processing.frontend import process_video_frontend
 process_video_frontend()
+
+import add_title
+add_title.add_logo()
 
 st.title("Interactive Video")
 

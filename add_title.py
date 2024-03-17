@@ -1,5 +1,4 @@
 import streamlit as st
-import time
 
 
 def add_logo():
@@ -7,14 +6,11 @@ def add_logo():
         st.session_state["processed_video"] = None
     # The image is stored at icon.png
 
-    # Access the video name from the session state
-    video_name = st.session_state["processed_video"].video_name if st.session_state["processed_video"] else None
-
     st.markdown(
         """
         <style>
             [data-testid="stSidebarNav"] {
-                background-image: url("https://raw.githubusercontent.com/CuHackit2024/LectureGenie/main/icon_small.png");
+                background-image: url("https://raw.githubusercontent.com/LectureGenieDevTeam/LectureGenie/main/icons/icon.png");
                 background-repeat: no-repeat;
                 padding-top: 120px;
                 background-position: 40px 20px;

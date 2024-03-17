@@ -1,1 +1,1 @@
-sudo /usr/bin/python3 garbage_collector.py > gc.log 2>&1 &
+sudo /usr/bin/python3 garbage_collector.py > gc.log 2>&1
