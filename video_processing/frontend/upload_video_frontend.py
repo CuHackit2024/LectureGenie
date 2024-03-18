@@ -24,7 +24,7 @@ def upload_video_frontend():
     else:
         st.warning("You need to be logged in to load a processed video")
 
-    uploaded_file = st.file_uploader("Upload a video file", type=["mp4"])
+    uploaded_file = st.file_uploader("Upload a video file", type=["mp4", "mov"])
 
     if uploaded_file is not None:
         # Create a folder using the name of the video

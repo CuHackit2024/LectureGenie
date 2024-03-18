@@ -44,8 +44,9 @@ top_cols = st.columns([.75, .25])
 
 
 with top_cols[0]:
+    loaded_video = open(st.session_state.processed_video.path_to_video, "rb").read()
     with st.container(border=True):
-        st.video(st.session_state.processed_video.path_to_video)
+        st.video(loaded_video)
 
 with top_cols[1]:
     start_time_str = st.text_input("Question Time", "00:00")
