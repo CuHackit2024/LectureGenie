@@ -36,6 +36,7 @@ def timed_frames(video_path: str, timestamps: list[int] = None, number_frames=No
         cap.set(cv2.CAP_PROP_POS_MSEC, timestamp * 1000)
         ret, frame = cap.read()
         if ret:
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frames.append((timestamp, frame))
     cap.release()
     return frames

@@ -43,6 +43,4 @@ def upload_video_frontend():
         with open(st.session_state["processed_video"].path_to_video, "wb") as file:
             file.write(uploaded_file.getvalue())
 
-
-
         st.session_state["video_processing_stage"] = "transcribe_video"
