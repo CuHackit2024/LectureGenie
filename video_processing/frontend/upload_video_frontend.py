@@ -9,6 +9,8 @@ def upload_video_frontend():
     st.markdown("Choose an already processed video **OR** upload a new video to process")
     if st.session_state["username"] is not None:
         available_folders = os.listdir(users_path)
+        # Filter out the files
+        available_folders = [folder for folder in available_folders if os.path.isdir(f"{users_path}/{folder}")]
         selected_folder = st.selectbox("Select a folder to load an already processed video", available_folders)
         if len(available_folders) > 0 and st.button("Load processed video"):
             # Load the processed video

@@ -13,6 +13,8 @@ def login_frontend():
     username = username.strip()
     if st.button("Submit"):
         st.session_state["username"] = username
+        st.session_state["video_processing_stage"] = "upload_video"
+        st.session_state["processed_video"] = None
         if st.session_state["username"] in existing_usernames:
             st.success("Welcome back!")
         else:

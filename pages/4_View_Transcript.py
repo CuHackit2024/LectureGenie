@@ -1,13 +1,14 @@
 import streamlit as st
 import pandas as pd
 from PIL import Image
+from video_processing.frontend import process_video_frontend
 
 st.set_page_config(
     page_title="View Transcript",
     page_icon=Image.open("icons/icon_icon.png"),
 )
 
-from video_processing.frontend import process_video_frontend
+
 
 import add_title
 
@@ -45,8 +46,12 @@ keyframe_path = st.session_state.processed_video.get_path_to_keyframes()
 for i in range(len(st.session_state.processed_video.segments)):
     frame_path = f"{keyframe_path}/frame_{i}.jpg"
     # Load the image
-    img = Image.open(frame_path)
-    frames.append(img)
+    try:
+        img = Image.open(frame_path)
+        frames.append(img)
+    except FileNotFoundError:
+        st.error(f"Could not find the keyframe at {frame_path}")
+
 
 # Creating 4 columns and showing the images within them
 columns = st.columns(4)
