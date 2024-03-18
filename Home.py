@@ -6,6 +6,7 @@ st.set_page_config(
     page_title="LectureGenie Home",
     layout="centered",
     page_icon=Image.open("icons/icon_icon.png"),
+    initial_sidebar_state="expanded",
 )
 import add_title
 add_title.add_logo()
@@ -14,16 +15,16 @@ if "video_processing_stage" not in st.session_state:
     st.session_state.video_processing_stage = None
 
 
-process_video_frontend()
-
-
-
 
 col1, col2, col3 = st.columns(3)
 
 col2.write(r"$\textsf{\Huge LectureGenie}$")
 
-# st.write(r"$\textsf{\normalsize A web application to help you understand and retain information from your study materials}$")
+
+cols = st.columns(2)
+
+
+
 
 st.write("##### Upload your lecture videos and get interactive quizzes, notes and flashcards")
 
@@ -40,6 +41,8 @@ st.markdown(
 """
 )
 
+with cols[1]:
+    process_video_frontend()
 
 
 

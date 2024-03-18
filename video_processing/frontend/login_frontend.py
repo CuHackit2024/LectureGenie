@@ -9,6 +9,8 @@ def login_frontend():
     existing_usernames = os.listdir("user_data")
     st.title("**Login / Sign Up**")
     username = st.text_input("Username")
+    # Remove trailing and leading whitespace
+    username = username.strip()
     if st.button("Submit"):
         st.session_state["username"] = username
         if st.session_state["username"] in existing_usernames:

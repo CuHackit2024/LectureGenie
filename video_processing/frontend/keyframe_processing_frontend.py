@@ -21,7 +21,8 @@ def keyframe_processing_frontend():
     descriptions = get_descriptions([f[1] for f in frames])
 
     if descriptions is None:
-        st.error("Failed to generate descriptions for keyframes, have to run description script")
+        st.error("Failed to generate descriptions for keyframes (Check FD service is running)")
+        return
 
     status.success("Descriptions generated")
     st.session_state["processed_video"].add_descriptions(descriptions)

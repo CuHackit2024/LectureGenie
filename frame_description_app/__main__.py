@@ -53,8 +53,6 @@ class Descriptor:
 
 @app.route('/generate_descriptions', methods=['POST'])
 def handle_api_request():
-    with open("../progress.txt", "w") as file:
-        file.write("0")
 
     # Print everything that was sent in the request to help with debugging
     image_file_tuples = request.files.items()
