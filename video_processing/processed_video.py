@@ -29,6 +29,11 @@ class ProcessedVideo:
         with open(file_path, "w") as file:
             json.dump(data, file)
 
+    def get_path_to_keyframes(self):
+        keyframe_folder = self.path_to_video.split("/")
+        keyframe_folder = "/".join(keyframe_folder[:-1]) + "/keyframes"
+        return keyframe_folder
+
     def get_shortest_pair(self):
         """
         Returns the two shortest adjacent segments

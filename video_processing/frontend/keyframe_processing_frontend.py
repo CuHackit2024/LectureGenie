@@ -21,8 +21,7 @@ def keyframe_processing_frontend():
     # Saving the keyframes as images in the folder
     # Creating a folder for the keyframes
     # Example path to vide: user_data/Ethan/1000000713/processed.mp4
-    keyframe_folder = st.session_state.processed_video.path_to_video.split("/")
-    keyframe_folder = "/".join(keyframe_folder[:-1]) + "/keyframes"
+    keyframe_folder = st.session_state.processed_video.get_path_to_keyframes()
     os.makedirs(keyframe_folder, exist_ok=True)
 
     for i, frame in enumerate(frames): # frames is a list of tuples (timestamp, ndarray)
