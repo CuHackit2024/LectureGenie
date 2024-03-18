@@ -1,1 +1,1 @@
-sudo /usr/bin/python3 -m streamlit run Home.py --server.port 80 > mp.log 2>&1
+sudo /usr/bin/python3 -m streamlit run Home.py --server.port 80 >> mp.log 2>&1
